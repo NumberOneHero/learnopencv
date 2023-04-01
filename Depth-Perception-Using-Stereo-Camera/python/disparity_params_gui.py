@@ -5,7 +5,7 @@ import cv2
 # Check for left and right camera IDs
 # These values can change depending on the system
 CamL_id = 2 # Camera ID for left camera
-CamR_id = 1 # Camera ID for right camera
+CamR_id = 0 # Camera ID for right camera
 
 CamL= cv2.VideoCapture(CamL_id)
 CamR= cv2.VideoCapture(CamR_id)
