@@ -1,14 +1,58 @@
-import numpy as np 
 import cv2
+import numpy as np
+from urllib.request import urlopen
+
+pTime = 0
+
+# change to your ESP32-CAM ip
+urlLeft = "http://192.168.137.143:81/stream"
+urlRight = "http://192.168.137.179:81/stream"
+CAMERA_BUFFRER_SIZE = 18432
+streamLeft = urlopen(urlLeft)
+streamRight = urlopen(urlRight)
+num=0
+RetL = False
+RetR = False
+i = 0
+img = None
+def Esp32Frame(stream,side):
+	bts = b''
+
+	bts += stream.read(CAMERA_BUFFRER_SIZE)
+	jpghead = bts.find(b'\xff\xd8')
+	jpgend = bts.find(b'\xff\xd9')
+
+    
+	if jpghead > -1 and jpgend > -1:
+		jpg = bts[jpghead:jpgend + 2]
+		bts = bts[jpgend + 2:]
+		img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+			# img=cv.flip(img,0) #>0:垂直翻轉, 0:水平翻轉, <0:垂直水平翻轉
+			# h,w=img.shape[:2]
+			# print('影像大小 高:' + str(h) + '寬：' + str(w))
+			# img2 = img
+
+		k = cv2.waitKey(5)
+		retL = True
+		retR = True
+
+	else:
+		retL = False
+		retR = False
+	return img
 
 
-# Check for left and right camera IDs
-# These values can change depending on the system
-CamL_id = 2 # Camera ID for left camera
-CamR_id = 0 # Camera ID for right camera
 
-CamL= cv2.VideoCapture(CamL_id)
-CamR= cv2.VideoCapture(CamR_id)
+
+
+
+
+
+
+
+
+
+
 
 # Reading the mapping values for stereo image rectification
 cv_file = cv2.FileStorage("../data/stereo_rectify_maps.xml", cv2.FILE_STORAGE_READ)
@@ -42,8 +86,8 @@ stereo = cv2.StereoBM_create()
 while True:
 
 	# Capturing and storing left and right camera images
-	retL, imgL= CamL.read()
-	retR, imgR= CamR.read()
+	imgL= Esp32Frame(streamLeft,urlLeft)
+	imgR= Esp32Frame(streamRight,urlRight)
 	
 	# Proceed only if the frames have been captured
 	if retL and retR:
@@ -112,8 +156,8 @@ while True:
 			break
 	
 	else:
-		CamL= cv2.VideoCapture(CamL_id)
-		CamR= cv2.VideoCapture(CamR_id)
+		retL, imgL= Esp32Frame(streamLeft,urlLeft)
+		retR, imgR= Esp32Frame(streamRight,urlRight)
 
 print("Saving depth estimation paraeters ......")
 
