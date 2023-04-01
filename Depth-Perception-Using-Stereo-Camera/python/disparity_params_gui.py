@@ -6,10 +6,6 @@ pTime = 0
 
 
 
-
-
-
-
 # change to your ESP32-CAM ip
 urlLeft = "http://192.168.137.143:81/stream"
 urlRight = "http://192.168.137.179:81/stream"
