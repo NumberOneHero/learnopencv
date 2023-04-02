@@ -29,7 +29,7 @@ def Esp32Frame(stream,img,bts):
 	jpghead = bts.find(b'\xff\xd8')
 	jpgend = bts.find(b'\xff\xd9')
 
-    
+
 	if jpghead > -1 and jpgend > -1:
 		jpg = bts[jpghead:jpgend + 2]
 		bts = bts[jpgend + 2:]
