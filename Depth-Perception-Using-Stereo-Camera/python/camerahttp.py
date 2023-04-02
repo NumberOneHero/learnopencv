@@ -42,6 +42,7 @@ while True:
 
 
     try:
+
         bts += stream.read(CAMERA_BUFFRER_SIZE)
         jpghead = bts.find(b'\xff\xd8')
         jpgend = bts.find(b'\xff\xd9')
@@ -55,8 +56,8 @@ while True:
             # print('影像大小 高:' + str(h) + '寬：' + str(w))
             #img2 = img
 
-            k = cv2.waitKey(25)
-
+            k = cv2.waitKey(10)
+            print("deuuuuuuuuuuu")
             if k == 27:
                 break
             elif k == ord('w'):  # wait for 's' key to save and exit
@@ -80,7 +81,8 @@ while True:
             #print(results.pose_landmarks)
 
             cv.imshow("Image", img)
-
+        else:
+            print("nao deu ")
 
 
 

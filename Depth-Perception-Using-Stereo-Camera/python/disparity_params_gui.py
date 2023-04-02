@@ -9,7 +9,7 @@ pTime = 0
 
 
 
-
+bts = b''
 # change to your ESP32-CAM ip
 urlLeft = "http://192.168.137.143:81/stream"
 urlRight = "http://192.168.137.179:81/stream"
@@ -17,12 +17,13 @@ CAMERA_BUFFRER_SIZE = 18432
 streamLeft = urlopen(urlLeft)
 streamRight = urlopen(urlRight)
 num=0
-RetL = False
-RetR = False
+retL = False
+retR = False
 i = 0
-img = None
-def Esp32Frame(stream,side):
-	bts = b''
+imgR = None
+imgL = None
+def Esp32Frame(stream,img,bts):
+
 
 	bts += stream.read(CAMERA_BUFFRER_SIZE)
 	jpghead = bts.find(b'\xff\xd8')
@@ -45,7 +46,7 @@ def Esp32Frame(stream,side):
 	else:
 		retL = False
 		retR = False
-	return img
+
 
 
 
@@ -92,8 +93,11 @@ stereo = cv2.StereoBM_create()
 while True:
 
 	# Capturing and storing left and right camera images
-	imgL= Esp32Frame(streamLeft,urlLeft)
-	imgR= Esp32Frame(streamRight,urlRight)
+	Esp32Frame(streamLeft, imgL,bts)
+	Esp32Frame(streamRight, imgR,bts)
+
+	imgL= imgL
+	imgR= imgR
 	
 	# Proceed only if the frames have been captured
 	if retL and retR:
@@ -162,8 +166,11 @@ while True:
 			break
 	
 	else:
-		retL, imgL= Esp32Frame(streamLeft,urlLeft)
-		retR, imgR= Esp32Frame(streamRight,urlRight)
+		Esp32Frame(streamLeft, imgL,bts)
+		Esp32Frame(streamRight, imgR,bts)
+
+		imgL = imgL
+		imgR = imgR
 
 print("Saving depth estimation paraeters ......")
 
