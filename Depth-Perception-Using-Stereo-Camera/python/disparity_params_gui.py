@@ -98,7 +98,7 @@ while True:
 
 	imgL= imgL
 	imgR= imgR
-	
+
 	# Proceed only if the frames have been captured
 	if retL and retR:
 		imgR_gray = cv2.cvtColor(imgR,cv2.COLOR_BGR2GRAY)
