@@ -51,11 +51,6 @@ def Esp32Frame(stream,side):
 
 
 
-
-
-
-
-
 # Reading the mapping values for stereo image rectification
 cv_file = cv2.FileStorage("../data/stereo_rectify_maps.xml", cv2.FILE_STORAGE_READ)
 Left_Stereo_Map_x = cv_file.getNode("Left_Stereo_Map_x").mat()
