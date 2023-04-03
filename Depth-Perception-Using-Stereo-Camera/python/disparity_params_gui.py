@@ -8,8 +8,8 @@ pTime = 0
 
 
 
-
-bts = b''
+btsR= b''
+btsL = b''
 # change to your ESP32-CAM ip
 urlLeft = "http://192.168.137.143:81/stream"
 urlRight = "http://192.168.137.179:81/stream"
@@ -93,8 +93,8 @@ stereo = cv2.StereoBM_create()
 while True:
 
 	# Capturing and storing left and right camera images
-	Esp32Frame(streamLeft, imgL,bts)
-	Esp32Frame(streamRight, imgR,bts)
+	Esp32Frame(streamLeft, imgL,btsL)
+	Esp32Frame(streamRight, imgR,btsR)
 
 	imgL= imgL
 	imgR= imgR
@@ -166,8 +166,8 @@ while True:
 			break
 	
 	else:
-		Esp32Frame(streamLeft, imgL,bts)
-		Esp32Frame(streamRight, imgR,bts)
+		Esp32Frame(streamLeft, imgL,btsL)
+		Esp32Frame(streamRight, imgR,btsR)
 
 		imgL = imgL
 		imgR = imgR
