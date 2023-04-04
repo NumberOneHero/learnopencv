@@ -20,13 +20,11 @@ num=0
 retL = False
 retR = False
 
-i = 0
+
 imgR = None
 imgL = None
 def Esp32Frame(stream,img,bts):
-	global i
-	i =i + 1
-	print(i)
+
 	bts += stream.read(CAMERA_BUFFRER_SIZE)
 	jpghead = bts.find(b'\xff\xd8')
 	jpgend = bts.find(b'\xff\xd9')
@@ -35,7 +33,7 @@ def Esp32Frame(stream,img,bts):
 	if jpghead > -1 and jpgend > -1:
 		jpg = bts[jpghead:jpgend + 2]
 		bts = bts[jpgend + 2:]
-		print(jpg)
+
 		img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
 			# img=cv.flip(img,0) #>0:垂直翻轉, 0:水平翻轉, <0:垂直水平翻轉
 			# h,w=img.shape[:2]
@@ -66,7 +64,7 @@ def Esp32Frame(stream,img,bts):
 
 
 # Reading the mapping values for stereo image rectification
-cv_file = cv2.FileStorage("../data/stereo_rectify_maps.xml", cv2.FILE_STORAGE_READ)
+cv_file = cv2.FileStorage("../stereoMap.xml", cv2.FILE_STORAGE_READ)
 Left_Stereo_Map_x = cv_file.getNode("Left_Stereo_Map_x").mat()
 Left_Stereo_Map_y = cv_file.getNode("Left_Stereo_Map_y").mat()
 Right_Stereo_Map_x = cv_file.getNode("Right_Stereo_Map_x").mat()
@@ -162,7 +160,7 @@ while True:
 		disparity = (disparity/16.0 - minDisparity)/numDisparities
 
 		# Displaying the disparity map
-		cv2.imshow("disp",disparity)
+		cv2.imshow("disparity",disparity)
 
 		# Close window using esc key
 		if cv2.waitKey(1) == 27:
