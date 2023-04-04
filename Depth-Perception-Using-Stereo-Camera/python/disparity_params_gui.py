@@ -52,7 +52,7 @@ def Esp32Frame(stream,img,bts):
 
 	jpgend = -1
 	jpghead = -1
-
+	return bts , img
 
 
 
@@ -97,11 +97,10 @@ stereo = cv2.StereoBM_create()
 while True:
 
 	# Capturing and storing left and right camera images
-	Esp32Frame(streamLeft, imgL,btsL)
-	Esp32Frame(streamRight, imgR,btsR)
+	btsL,imgL = Esp32Frame(streamLeft, imgL,btsL)
+	btsR,imgR = Esp32Frame(streamRight, imgR,btsR)
 
-	imgL= imgL
-	imgR= imgR
+
 
 	# Proceed only if the frames have been captured
 	if retL and retR:
@@ -170,11 +169,10 @@ while True:
 			break
 	
 	else:
-		Esp32Frame(streamLeft, imgL,btsL)
-		Esp32Frame(streamRight, imgR,btsR)
+		btsL,imgL = Esp32Frame(streamLeft, imgL,btsL)
+		btsR,imgR = Esp32Frame(streamRight, imgR,btsR)
 
-		imgL = imgL
-		imgR = imgR
+
 
 print("Saving depth estimation paraeters ......")
 
