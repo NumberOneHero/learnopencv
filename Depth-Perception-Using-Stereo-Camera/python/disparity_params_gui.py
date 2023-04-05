@@ -23,7 +23,7 @@ retR = False
 
 imgR = None
 imgL = None
-def Esp32Frame(stream,img,bts):
+def Esp32Frame(stream,img,bts,ret):
 
 	bts += stream.read(CAMERA_BUFFRER_SIZE)
 	jpghead = bts.find(b'\xff\xd8')
@@ -41,16 +41,16 @@ def Esp32Frame(stream,img,bts):
 			# img2 = img
 
 		k = cv2.waitKey(5)
-		retL = True
-		retR = True
+		ret = True
+
 
 	else:
-		retL = False
-		retR = False
+		ret= False
+
 
 	jpgend = -1
 	jpghead = -1
-	return bts , img
+	return bts , img,ret
 
 
 
@@ -95,8 +95,8 @@ stereo = cv2.StereoBM_create()
 while True:
 
 	# Capturing and storing left and right camera images
-	btsL,imgL = Esp32Frame(streamLeft, imgL,btsL)
-	btsR,imgR = Esp32Frame(streamRight, imgR,btsR)
+	btsL,imgL,retL = Esp32Frame(streamLeft, imgL,btsL,retL)
+	btsR,imgR,retR = Esp32Frame(streamRight, imgR,btsR,retR)
 
 
 
@@ -160,15 +160,15 @@ while True:
 		disparity = (disparity/16.0 - minDisparity)/numDisparities
 
 		# Displaying the disparity map
-		cv2.imshow("disparity",disparity)
+		#cv2.imshow("disparity",disparity)
 
 		# Close window using esc key
 		if cv2.waitKey(1) == 27:
 			break
 	
 	else:
-		btsL,imgL = Esp32Frame(streamLeft, imgL,btsL)
-		btsR,imgR = Esp32Frame(streamRight, imgR,btsR)
+		btsL,imgL,retL = Esp32Frame(streamLeft, imgL,btsL,retL)
+		btsR,imgR,retR = Esp32Frame(streamRight, imgR,btsR,retR)
 
 
 
