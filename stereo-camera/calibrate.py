@@ -20,10 +20,10 @@ img_ptsR = []
 obj_pts = []
 
 for i in tqdm(range(1,28)):
-	imgL = cv2.imread(pathL+"img%d.png"%i)
-	imgR = cv2.imread(pathR+"img%d.png"%i)
-	imgL_gray = cv2.imread(pathL+"img%d.png"%i,0)
-	imgR_gray = cv2.imread(pathR+"img%d.png"%i,0)
+	imgL = cv2.imread(pathL+"imageL%d.png"%i)
+	imgR = cv2.imread(pathR+"imageR%d.png"%i)
+	imgL_gray = cv2.imread(pathL+"imageL%d.png"%i,0)
+	imgR_gray = cv2.imread(pathR+"imageR%d.png"%i,0)
 
 	outputL = imgL.copy()
 	outputR = imgR.copy()
