@@ -64,7 +64,7 @@ def Esp32Frame(stream,img,bts,ret):
 
 
 # Reading the mapping values for stereo image rectification
-cv_file = cv2.FileStorage("stereoMap.xml", cv2.FILE_STORAGE_READ)
+cv_file = cv2.FileStorage("params_py.xml", cv2.FILE_STORAGE_READ)
 Left_Stereo_Map_x = cv_file.getNode("Left_Stereo_Map_x").mat()
 Left_Stereo_Map_y = cv_file.getNode("Left_Stereo_Map_y").mat()
 Right_Stereo_Map_x = cv_file.getNode("Right_Stereo_Map_x").mat()
@@ -160,7 +160,7 @@ while True:
 		disparity = (disparity/16.0 - minDisparity)/numDisparities
 
 		# Displaying the disparity map
-		#cv2.imshow("disparity",disparity)
+		cv2.imshow("disparity",disparity)
 
 		# Close window using esc key
 		if cv2.waitKey(1) == 27:
