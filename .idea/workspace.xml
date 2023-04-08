@@ -46,7 +46,7 @@
       <recent name="C:\Users\Ruben Silva\Documents\GitHub\learnopencv\Depth-Perception-Using-Stereo-Camera\python" />
     </key>
   </component>
-  <component name="RunManager" selected="Python.disparity_params_gui">
+  <component name="RunManager" selected="Python.capture_images">
     <configuration name="calibrate" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
       <module name="learnopencv" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -154,9 +154,9 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.capture_images" />
         <item itemvalue="Python.disparity_params_gui" />
         <item itemvalue="Python.calibrate" />
-        <item itemvalue="Python.capture_images" />
         <item itemvalue="Python.camerahttp (1)" />
         <item itemvalue="Python.stereo_calibration" />
       </list>

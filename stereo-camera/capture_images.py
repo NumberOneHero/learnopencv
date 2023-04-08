@@ -33,7 +33,7 @@ while True:
         CR, cornersL = cv2.findChessboardCorners(grayL,(9,6),None)
 
         # If corners are detected in left and right image then we save it.
-        if (CL == True) and (CR == True) and timer <=2:
+        if (CL == True) and (CR == True) and timer <=3:
             count+=1
             cv2.imwrite(output_path+'stereoR/img%d.png'%count,imgR)
             cv2.imwrite(output_path+'stereoL/img%d.png'%count,imgL)
