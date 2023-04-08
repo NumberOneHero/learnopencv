@@ -35,7 +35,7 @@ def Esp32Frame(stream,img,bts,ret):
 		bts = bts[jpgend + 2:]
 
 		img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-			# img=cv.flip(img,0) #>0:垂直翻轉, 0:水平翻轉, <0:垂直水平翻轉
+		img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 			# h,w=img.shape[:2]
 			# print('影像大小 高:' + str(h) + '寬：' + str(w))
 			# img2 = img
@@ -48,8 +48,7 @@ def Esp32Frame(stream,img,bts,ret):
 		ret= False
 
 
-	jpgend = -1
-	jpghead = -1
+
 	return bts , img,ret
 
 
@@ -160,7 +159,8 @@ while True:
 
 		# Displaying the disparity map
 		cv2.imshow("disparity",disparity)
-
+		cv2.imshow("left", Left_nice)
+		cv2.imshow("right", Right_nice)
 		# Close window using esc key
 		if cv2.waitKey(1) == 27:
 			break
