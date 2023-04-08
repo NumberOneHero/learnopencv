@@ -2,42 +2,12 @@ import numpy as np
 import cv2
 import time
 
-print("Checking the right and left camera IDs:")
-print("Press (y) if IDs are correct and (n) to swap the IDs")
-print("Press enter to start the process >> ")
-input()
+import sys
+sys.path.insert(1,'C://Users//Ruben Silva//Documents//GitHub//learnopencv//Depth-Perception-Using-Stereo-Camera//python')
+from MyFunctions import *
 
-# Check for left and right camera IDs
-CamL_id = 1
-CamR_id = 2
 
-CamL= cv2.VideoCapture(CamL_id)
-CamR= cv2.VideoCapture(CamR_id)
 
-for i in range(100):
-    retL, frameL= CamL.read()
-    retR, frameR= CamR.read()
-
-cv2.imshow('imgL',frameL)
-cv2.imshow('imgR',frameR)
-
-if cv2.waitKey(0) & 0xFF == ord('y') or cv2.waitKey(0) & 0xFF == ord('Y'):
-    CamL_id = 1
-    CamR_id = 2
-    print("Camera IDs maintained")
-
-elif cv2.waitKey(0) & 0xFF == ord('n') or cv2.waitKey(0) & 0xFF == ord('N'):
-    CamL_id = 2
-    CamR_id = 1
-    print("Camera IDs swapped")
-else:
-    print("Wrong input response")
-    exit(-1)
-CamR.release()
-CamL.release()
-
-CamL= cv2.VideoCapture(CamL_id)
-CamR= cv2.VideoCapture(CamR_id)
 output_path = "./data/"
 
 start = time.time()
@@ -46,27 +16,28 @@ count = 0
 
 while True:
     timer = T - int(time.time() - start)
-    retR, frameR= CamR.read()
-    retL, frameL= CamL.read()
-    
-    img1_temp = frameL.copy()
-    cv2.putText(img1_temp,"%r"%timer,(50,50),1,5,(55,0,0),5)
-    cv2.imshow('imgR',frameR)
-    cv2.imshow('imgL',img1_temp)
+    btsL, imgL, retL = Esp32Frame(streamLeft, imgL, btsL, retL)
+    btsR, imgR, retR = Esp32Frame(streamRight, imgR, btsR, retR)
 
-    grayR= cv2.cvtColor(frameR,cv2.COLOR_BGR2GRAY)
-    grayL= cv2.cvtColor(frameL,cv2.COLOR_BGR2GRAY)
+    if (retR == True) and (retL == True):
+        img1_temp = imgL.copy()
+        cv2.putText(img1_temp,"%r"%timer,(50,50),1,5,(55,0,0),5)
+        cv2.imshow('imgR',imgR)
+        cv2.imshow('imgL',img1_temp)
 
-    # Find the chess board corners
-    retR, cornersR = cv2.findChessboardCorners(grayR,(9,6),None)
-    retL, cornersL = cv2.findChessboardCorners(grayL,(9,6),None)
+        grayR= cv2.cvtColor(imgR,cv2.COLOR_BGR2GRAY)
+        grayL= cv2.cvtColor(imgL,cv2.COLOR_BGR2GRAY)
 
-    # If corners are detected in left and right image then we save it.
-    if (retR == True) and (retL == True) and timer <=0:
-        count+=1
-        cv2.imwrite(output_path+'stereoR/img%d.png'%count,frameR)
-        cv2.imwrite(output_path+'stereoL/img%d.png'%count,frameL)
-    
+        # Find the chess board corners
+        CL, cornersR = cv2.findChessboardCorners(grayR,(9,6),None)
+        CR, cornersL = cv2.findChessboardCorners(grayL,(9,6),None)
+
+        # If corners are detected in left and right image then we save it.
+        if (CL == True) and (CR == True) :
+            count+=1
+            cv2.imwrite(output_path+'stereoR/img%d.png'%count,imgR)
+            cv2.imwrite(output_path+'stereoL/img%d.png'%count,imgL)
+
     if timer <=0:
         start = time.time()
     
@@ -76,6 +47,5 @@ while True:
         break
 
 # Release the Cameras
-CamR.release()
-CamL.release()
+
 cv2.destroyAllWindows()

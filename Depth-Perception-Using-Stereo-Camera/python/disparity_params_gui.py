@@ -19,7 +19,7 @@ streamRight = urlopen(urlRight)
 num=0
 retL = False
 retR = False
-
+ret = None
 
 imgR = None
 imgL = None
