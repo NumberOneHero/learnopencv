@@ -13,7 +13,7 @@ btsL = b''
 # change to your ESP32-CAM ip
 urlLeft = "http://192.168.137.170:81/stream"
 urlRight = "http://192.168.137.66:81/stream"
-CAMERA_BUFFRER_SIZE = 18432
+CAMERA_BUFFRER_SIZE = 11000
 streamLeft = urlopen(urlLeft)
 streamRight = urlopen(urlRight)
 num=0
