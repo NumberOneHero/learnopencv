@@ -2,54 +2,12 @@ import cv2
 import numpy as np
 from urllib.request import urlopen
 
+import sys
+sys.path.insert(1,'C://Users//Ruben Silva//Documents//GitHub//learnopencv//Depth-Perception-Using-Stereo-Camera//python')
+from MyFunctions import *
 pTime = 0
 
 
-
-
-
-btsR= b''
-btsL = b''
-# change to your ESP32-CAM ip
-urlLeft = "http://192.168.137.170:81/stream"
-urlRight = "http://192.168.137.66:81/stream"
-CAMERA_BUFFRER_SIZE = 11000
-streamLeft = urlopen(urlLeft)
-streamRight = urlopen(urlRight)
-num=0
-retL = False
-retR = False
-ret = None
-
-imgR = None
-imgL = None
-def Esp32Frame(stream,img,bts,ret):
-
-	bts += stream.read(CAMERA_BUFFRER_SIZE)
-	jpghead = bts.find(b'\xff\xd8')
-	jpgend = bts.find(b'\xff\xd9')
-
-
-	if jpghead > -1 and jpgend > -1:
-		jpg = bts[jpghead:jpgend + 2]
-		bts = bts[jpgend + 2:]
-
-		img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-		img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-			# h,w=img.shape[:2]
-			# print('影像大小 高:' + str(h) + '寬：' + str(w))
-			# img2 = img
-
-		k = cv2.waitKey(5)
-		ret = True
-
-
-	else:
-		ret= False
-
-
-
-	return bts , img,ret
 
 
 
@@ -94,9 +52,8 @@ stereo = cv2.StereoBM_create()
 while True:
 
 	# Capturing and storing left and right camera images
-	btsL,imgL,retL = Esp32Frame(streamLeft, imgL,btsL,retL)
-	btsR,imgR,retR = Esp32Frame(streamRight, imgR,btsR,retR)
-
+	btsL, imgL, retL = Esp32Frame(urlLeft, imgL, btsL, retL)
+	btsR, imgR, retR = Esp32Frame(urlRight, imgR, btsR, retR)
 
 	# Proceed only if the frames have been captured
 	if retL and retR:
@@ -166,8 +123,8 @@ while True:
 			break
 	
 	else:
-		btsL,imgL,retL = Esp32Frame(streamLeft, imgL,btsL,retL)
-		btsR,imgR,retR = Esp32Frame(streamRight, imgR,btsR,retR)
+		btsL, imgL, retL = Esp32Frame(urlLeft, imgL, btsL, retL)
+		btsR, imgR, retR = Esp32Frame(urlRight, imgR, btsR, retR)
 
 
 

@@ -1,4 +1,4 @@
-import numpy as np 
+import numpy as np
 import cv2
 from tqdm import tqdm
 
@@ -19,7 +19,7 @@ img_ptsL = []
 img_ptsR = []
 obj_pts = []
 
-for i in tqdm(range(1,55)):
+for i in tqdm(range(1,16)):
 	imgL = cv2.imread(pathL+"img%d.png"%i)
 	imgR = cv2.imread(pathR+"img%d.png"%i)
 	imgL_gray = cv2.imread(pathL+"img%d.png"%i,0)
@@ -47,72 +47,22 @@ for i in tqdm(range(1,55)):
 
 print("Calculating left camera parameters ... ")
 # Calibrating left camera
-retL, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(obj_pts,img_ptsL,imgL_gray.shape[::-1],None,None,flags=cv2.CALIB_RATIONAL_MODEL)
-print(retL)
-
-
+retL, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(obj_pts,img_ptsL,imgL_gray.shape[::-1],None,None)
 hL,wL= imgL_gray.shape[:2]
-
-
-#change the 1 to a 0 , investigate what it does
-new_mtxL, roiL= cv2.getOptimalNewCameraMatrix(mtxL,distL,(wL,hL),-1,(wL,hL))
-print(roiL)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+new_mtxL, roiL= cv2.getOptimalNewCameraMatrix(mtxL,distL,(wL,hL),1,(wL,hL))
 
 print("Calculating right camera parameters ... ")
 # Calibrating right camera
-retR, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(obj_pts,img_ptsR,imgR_gray.shape[::-1],None,None,flags=cv2.CALIB_RATIONAL_MODEL)
+retR, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(obj_pts,img_ptsR,imgR_gray.shape[::-1],None,None)
 hR,wR= imgR_gray.shape[:2]
-print(retR)
-new_mtxR, roiR= cv2.getOptimalNewCameraMatrix(mtxR,distR,(wR,hR),-1,(wR,hR))
-print(roiR)
-
-
-
-# undistort
-#im3=cv2.imread(pathR+"img%d.png"%30)
-
-#dst = cv2.undistort(im3, mtxR, distR, None, new_mtxR)
-# crop the image
-#x, y, wL, hR = roiR
-#dst = dst[y:y+hR, x:x+wR]
-#while True:
-#	cv2.imshow("im4",im3)
-#	cv2.imshow('im3', dst)
-#	cv2.waitKey(0)
-
-
-
-
-
-
-
-
-
-
+new_mtxR, roiR= cv2.getOptimalNewCameraMatrix(mtxR,distR,(wR,hR),1,(wR,hR))
 
 
 print("Stereo calibration .....")
 flags = 0
 flags |= cv2.CALIB_FIX_INTRINSIC
 # Here we fix the intrinsic camara matrixes so that only Rot, Trns, Emat and Fmat are calculated.
-# Hence intrinsic parameters are the same 
+# Hence intrinsic parameters are the same
 
 criteria_stereo= (cv2.TERM_CRITERIA_EPS + cv2.TERM_CRITERIA_MAX_ITER, 30, 0.001)
 
@@ -128,56 +78,21 @@ retS, new_mtxL, distL, new_mtxR, distR, Rot, Trns, Emat, Fmat = cv2.stereoCalibr
                                                           imgL_gray.shape[::-1],
                                                           criteria_stereo,
                                                           flags)
-
+print(retS)
 # Once we know the transformation between the two cameras we can perform stereo rectification
 # StereoRectify function
-rectify_scale= 0 # if 0 image croped, if 1 image not croped
+rectify_scale= 1 # if 0 image croped, if 1 image not croped
 rect_l, rect_r, proj_mat_l, proj_mat_r, Q, roiL, roiR= cv2.stereoRectify(new_mtxL, distL, new_mtxR, distR,
                                                  imgL_gray.shape[::-1], Rot, Trns,
                                                  rectify_scale,(0,0))
 
-print(retS)
-print(new_mtxL)
-print(distL)
-print(new_mtxR)
-print(distR)
-print(Rot)
-print(Trns)
-print(Emat)
-print(Fmat)
-
 # Use the rotation matrixes for stereo rectification and camera intrinsics for undistorting the image
-# Compute the rectification map (mapping between the original image pixels and 
+# Compute the rectification map (mapping between the original image pixels and
 # their transformed values after applying rectification and undistortion) for left and right camera frames
 Left_Stereo_Map= cv2.initUndistortRectifyMap(new_mtxL, distL, rect_l, proj_mat_l,
                                              imgL_gray.shape[::-1], cv2.CV_16SC2)
-
 Right_Stereo_Map= cv2.initUndistortRectifyMap(new_mtxR, distR, rect_r, proj_mat_r,
                                               imgR_gray.shape[::-1], cv2.CV_16SC2)
-
-
-# Applying stereo image rectification on the left image
-Left_nice = cv2.remap(imgL_gray,
-					  Left_Stereo_Map[0],
-					  Left_Stereo_Map[1],
-					  cv2.INTER_LANCZOS4,
-					  cv2.BORDER_CONSTANT,
-					  0)
-
-# Applying stereo image rectification on the right image
-Right_nice = cv2.remap(imgR_gray,
-					   Right_Stereo_Map[0],
-					   Right_Stereo_Map[1],
-					   cv2.INTER_LANCZOS4,
-					   cv2.BORDER_CONSTANT,
-					   0)
-
-while True:
-	cv2.imshow("imgGL", imgL_gray)
-	cv2.imshow("imgGR", imgR_gray)
-	cv2.imshow("leftNice",Left_nice)
-	cv2.imshow("rightNice",Right_nice)
-	cv2.waitKey(0)
 
 
 print("Saving paraeters ......")

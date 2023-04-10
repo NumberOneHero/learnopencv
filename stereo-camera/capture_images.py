@@ -16,8 +16,8 @@ count = 0
 
 while True:
     timer = T - int(time.time() - start)
-    btsL, imgL, retL = Esp32Frame(streamLeft, imgL, btsL, retL)
-    btsR, imgR, retR = Esp32Frame(streamRight, imgR, btsR, retR)
+    btsL, imgL, retL = Esp32Frame(urlLeft, imgL, btsL, retL)
+    btsR, imgR, retR = Esp32Frame(urlRight, imgR, btsR, retR)
 
     if (retR == True) and (retL == True):
         img1_temp = imgL.copy()
