@@ -47,10 +47,11 @@ for i in tqdm(range(1,46)):
 
 print("Calculating left camera parameters ... ")
 # Calibrating left camera
-retL, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(obj_pts,img_ptsL,imgL_gray.shape[::-1],None,None)
+retL, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(obj_pts,img_ptsL,imgL_gray.shape[::-1],None,None,flags=cv2.CALIB_RATIONAL_MODEL)
 hL,wL= imgL_gray.shape[:2]
+
 #change the 1 to a 0 , investigate what it does
-new_mtxL, roiL= cv2.getOptimalNewCameraMatrix(mtxL,distL,(wL,hL),0,(wL,hL))
+new_mtxL, roiL= cv2.getOptimalNewCameraMatrix(mtxL,distL,(wL,hL),-1,(wL,hL))
 
 
 
@@ -62,17 +63,6 @@ new_mtxL, roiL= cv2.getOptimalNewCameraMatrix(mtxL,distL,(wL,hL),0,(wL,hL))
 
 
 
-# undistort
-im3=cv2.imread(pathL+"img%d.png"%5)
-
-dst = cv2.undistort(im3, mtxL, distL, None, new_mtxL)
-# crop the image
-x, y, wL, hL = roiL
-dst = dst[y:y+hL, x:x+wL]
-while True:
-	cv2.imshow("im4",im3)
-	cv2.imshow('im3', dst)
-	cv2.waitKey(0)
 
 
 
@@ -83,9 +73,35 @@ while True:
 
 print("Calculating right camera parameters ... ")
 # Calibrating right camera
-retR, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(obj_pts,img_ptsR,imgR_gray.shape[::-1],None,None)
+retR, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(obj_pts,img_ptsR,imgR_gray.shape[::-1],None,None,flags=cv2.CALIB_RATIONAL_MODEL)
 hR,wR= imgR_gray.shape[:2]
-new_mtxR, roiR= cv2.getOptimalNewCameraMatrix(mtxR,distR,(wR,hR),1,(wR,hR))
+
+new_mtxR, roiR= cv2.getOptimalNewCameraMatrix(mtxR,distR,(wR,hR),-1,(wR,hR))
+
+
+
+
+# undistort
+#im3=cv2.imread(pathR+"img%d.png"%30)
+
+#dst = cv2.undistort(im3, mtxR, distR, None, new_mtxR)
+# crop the image
+#x, y, wL, hR = roiR
+#dst = dst[y:y+hR, x:x+wR]
+#while True:
+#	cv2.imshow("im4",im3)
+#	cv2.imshow('im3', dst)
+#	cv2.waitKey(0)
+
+
+
+
+
+
+
+
+
+
 
 
 print("Stereo calibration .....")
@@ -126,6 +142,29 @@ Left_Stereo_Map= cv2.initUndistortRectifyMap(new_mtxL, distL, rect_l, proj_mat_l
                                              imgL_gray.shape[::-1], cv2.CV_16SC2)
 Right_Stereo_Map= cv2.initUndistortRectifyMap(new_mtxR, distR, rect_r, proj_mat_r,
                                               imgR_gray.shape[::-1], cv2.CV_16SC2)
+
+# Applying stereo image rectification on the left image
+Left_nice = cv2.remap(imgL_gray,
+					  Left_Stereo_Map[0],
+					  Left_Stereo_Map[1],
+					  cv2.INTER_LANCZOS4,
+					  cv2.BORDER_CONSTANT,
+					  0)
+
+# Applying stereo image rectification on the right image
+Right_nice = cv2.remap(imgR_gray,
+					   Right_Stereo_Map[0],
+					   Right_Stereo_Map[1],
+					   cv2.INTER_LANCZOS4,
+					   cv2.BORDER_CONSTANT,
+					   0)
+
+while True:
+	cv2.imshow("imgGL", imgL_gray)
+	cv2.imshow("imgGR", imgR_gray)
+	cv2.imshow("leftNice",Left_nice)
+	cv2.imshow("rightNice",Right_nice)
+	cv2.waitKey(0)
 
 
 print("Saving paraeters ......")
