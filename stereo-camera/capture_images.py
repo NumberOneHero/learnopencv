@@ -11,7 +11,7 @@ from MyFunctions import *
 output_path = "./data/"
 
 start = time.time()
-T = 10
+T = 5
 count = 0
 
 while True:
