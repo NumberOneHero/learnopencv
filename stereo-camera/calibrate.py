@@ -19,7 +19,7 @@ img_ptsL = []
 img_ptsR = []
 obj_pts = []
 
-for i in tqdm(range(1,25)):
+for i in tqdm(range(1,15)):
 	imgL = cv2.imread(pathL+"img%d.png"%i)
 	imgR = cv2.imread(pathR+"img%d.png"%i)
 	imgL_gray = cv2.imread(pathL+"img%d.png"%i,0)
@@ -49,12 +49,14 @@ print("Calculating left camera parameters ... ")
 # Calibrating left camera
 retL, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(obj_pts,img_ptsL,imgL_gray.shape[::-1],None,None)
 hL,wL= imgL_gray.shape[:2]
+print(retL)
 new_mtxL, roiL= cv2.getOptimalNewCameraMatrix(mtxL,distL,(wL,hL),1,(wL,hL))
 
 print("Calculating right camera parameters ... ")
 # Calibrating right camera
 retR, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(obj_pts,img_ptsR,imgR_gray.shape[::-1],None,None)
 hR,wR= imgR_gray.shape[:2]
+print(retR)
 new_mtxR, roiR= cv2.getOptimalNewCameraMatrix(mtxR,distR,(wR,hR),1,(wR,hR))
 
 

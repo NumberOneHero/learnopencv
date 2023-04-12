@@ -47,7 +47,7 @@ cv2.createTrackbar('disp12MaxDiff','disp',5,25,nothing)
 cv2.createTrackbar('minDisparity','disp',5,25,nothing)
 
 # Creating an object of StereoBM algorithm
-stereo = cv2.StereoBM_create()
+stereo = cv2.StereoSGBM_create()
 
 while True:
 
@@ -92,15 +92,15 @@ while True:
 		# Setting the updated parameters before computing disparity map
 		stereo.setNumDisparities(numDisparities)
 		stereo.setBlockSize(blockSize)
-		stereo.setPreFilterType(preFilterType)
-		stereo.setPreFilterSize(preFilterSize)
-		stereo.setPreFilterCap(preFilterCap)
-		stereo.setTextureThreshold(textureThreshold)
-		stereo.setUniquenessRatio(uniquenessRatio)
-		stereo.setSpeckleRange(speckleRange)
-		stereo.setSpeckleWindowSize(speckleWindowSize)
-		stereo.setDisp12MaxDiff(disp12MaxDiff)
-		stereo.setMinDisparity(minDisparity)
+		#stereo.setPreFilterType(preFilterType)
+		#stereo.setPreFilterSize(preFilterSize)
+		#stereo.setPreFilterCap(preFilterCap)
+		#stereo.setTextureThreshold(textureThreshold)
+		#stereo.setUniquenessRatio(uniquenessRatio)
+		#stereo.setSpeckleRange(speckleRange)
+		#stereo.setSpeckleWindowSize(speckleWindowSize)
+		#stereo.setDisp12MaxDiff(disp12MaxDiff)
+		#stereo.setMinDisparity(minDisparity)
 
 		# Calculating disparity using the StereoBM algorithm
 		disparity = stereo.compute(Left_nice,Right_nice)
