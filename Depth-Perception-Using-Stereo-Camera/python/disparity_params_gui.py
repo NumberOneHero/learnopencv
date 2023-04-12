@@ -96,11 +96,11 @@ while True:
 		#stereo.setPreFilterSize(preFilterSize)
 		#stereo.setPreFilterCap(preFilterCap)
 		#stereo.setTextureThreshold(textureThreshold)
-		#stereo.setUniquenessRatio(uniquenessRatio)
-		#stereo.setSpeckleRange(speckleRange)
-		#stereo.setSpeckleWindowSize(speckleWindowSize)
-		#stereo.setDisp12MaxDiff(disp12MaxDiff)
-		#stereo.setMinDisparity(minDisparity)
+		stereo.setUniquenessRatio(uniquenessRatio)
+		stereo.setSpeckleRange(speckleRange)
+		stereo.setSpeckleWindowSize(speckleWindowSize)
+		stereo.setDisp12MaxDiff(disp12MaxDiff)
+		stereo.setMinDisparity(minDisparity)
 
 		# Calculating disparity using the StereoBM algorithm
 		disparity = stereo.compute(Left_nice,Right_nice)
