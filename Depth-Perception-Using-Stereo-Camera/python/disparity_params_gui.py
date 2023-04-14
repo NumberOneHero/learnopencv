@@ -23,7 +23,7 @@ ret = None
 
 imgR = None
 imgL = None
-def Esp32Frame(stream,img,bts,ret):
+def Esp32Frame(stream,bts,ret):
 	jpghead = -1
 	jgpend = -1
 	while (jpghead < 0 or jgpend < 0):
@@ -100,8 +100,8 @@ stereo = cv2.StereoSGBM_create()
 while True:
 
 	# Capturing and storing left and right camera images
-	btsL,imgL,retL = Esp32Frame(streamLeft, imgL,btsL,retL)
-	btsR,imgR,retR = Esp32Frame(streamRight, imgR,btsR,retR)
+	btsL,imgL,retL = Esp32Frame(streamLeft,btsL,retL)
+	btsR,imgR,retR = Esp32Frame(streamRight,btsR,retR)
 
 
 	# Proceed only if the frames have been captured
