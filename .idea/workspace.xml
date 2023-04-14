@@ -45,6 +45,9 @@
     <key name="CopyFile.RECENT_KEYS">
       <recent name="C:\Users\Ruben Silva\Documents\GitHub\learnopencv\Depth-Perception-Using-Stereo-Camera\python" />
     </key>
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="C:\Users\Ruben Silva\Documents\GitHub\learnopencv\Depth-Perception-Using-Stereo-Camera\data" />
+    </key>
   </component>
   <component name="RunManager" selected="Python.disparity_params_gui">
     <configuration name="MyFunctions" type="PythonConfigurationType" factoryName="Python" temporary="true" nameIsGenerated="true">
@@ -155,8 +158,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.disparity_params_gui" />
-        <item itemvalue="Python.capture_images" />
         <item itemvalue="Python.calibrate" />
+        <item itemvalue="Python.capture_images" />
         <item itemvalue="Python.MyFunctions" />
         <item itemvalue="Python.camerahttp (1)" />
       </list>

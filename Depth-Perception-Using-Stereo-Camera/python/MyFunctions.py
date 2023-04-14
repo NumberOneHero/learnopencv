@@ -1,11 +1,11 @@
 import cv2
 import numpy as np
 import urllib.request
-
+import time
 pTime = 0
 
-
-
+dTime = time.time()
+sTime= 0
 
 
 btsR= b''
@@ -23,6 +23,11 @@ ret = None
 imgR = None
 imgL = None
 def Esp32Frame(url,img,bts,ret):
+	print(url)
+	global dTime
+	sTime = time.time() - dTime
+	print(sTime)
+	dTime = time.time()
 	stream = urllib.request.urlopen(url)
 	bts += stream.read()
 	jpghead = bts.find(b'\xff\xd8')
@@ -39,7 +44,7 @@ def Esp32Frame(url,img,bts,ret):
 			# print('影像大小 高:' + str(h) + '寬：' + str(w))
 			# img2 = img
 
-		k = cv2.waitKey(5)
+
 		ret = True
 
 
