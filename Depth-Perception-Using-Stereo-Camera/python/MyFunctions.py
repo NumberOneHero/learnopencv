@@ -1,12 +1,7 @@
 import cv2
 import numpy as np
-<<<<<<< HEAD
 import urllib.request
 import time
-=======
-from urllib.request import urlopen
-
->>>>>>> parent of ce39019a (im a genius and solved it)
 pTime = 0
 
 dTime = time.time()
@@ -16,11 +11,10 @@ sTime= 0
 btsR= b''
 btsL = b''
 # change to your ESP32-CAM ip
-urlLeft = "http://192.168.137.170:81/stream"
-urlRight = "http://192.168.137.66:81/stream"
+urlLeft = "http://192.168.137.170/capture"
+urlRight = "http://192.168.137.66/capture"
 CAMERA_BUFFRER_SIZE = 18432
-streamLeft = urlopen(urlLeft)
-streamRight = urlopen(urlRight)
+
 num=0
 retL = False
 retR = False
@@ -28,7 +22,6 @@ ret = None
 
 imgR = None
 imgL = None
-<<<<<<< HEAD
 def Esp32Frame(url,img,bts,ret):
 	print(url)
 	global dTime
@@ -37,11 +30,6 @@ def Esp32Frame(url,img,bts,ret):
 	dTime = time.time()
 	stream = urllib.request.urlopen(url)
 	bts += stream.read()
-=======
-def Esp32Frame(stream,img,bts,ret):
-
-	bts += stream.read(CAMERA_BUFFRER_SIZE)
->>>>>>> parent of ce39019a (im a genius and solved it)
 	jpghead = bts.find(b'\xff\xd8')
 	jpgend = bts.find(b'\xff\xd9')
 
