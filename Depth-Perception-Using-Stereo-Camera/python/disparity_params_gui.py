@@ -13,7 +13,7 @@ btsL = b''
 # change to your ESP32-CAM ip
 urlLeft = "http://192.168.137.170:81/stream"
 urlRight = "http://192.168.137.66:81/stream"
-CAMERA_BUFFRER_SIZE = 11000
+CAMERA_BUFFRER_SIZE = 20000
 streamLeft = urlopen(urlLeft)
 streamRight = urlopen(urlRight)
 num=0
@@ -23,23 +23,27 @@ ret = None
 
 imgR = None
 imgL = None
-def Esp32Frame(stream,img,bts,ret):
+def Esp32Frame(stream,bts,ret):
 	jpghead = -1
 	jgpend = -1
+
 	while (jpghead < 0 or jgpend < 0):
-		bts += stream.read()
+		bts += stream.read(CAMERA_BUFFRER_SIZE)
 
 		if jpghead < 0 :
 			jpghead = bts.find(b'\xff\xd8')
+			print("jpghead < 0")
+			print(jpghead)
 		if jgpend < 0:
+			print("jpgend < 0")
 
 			jpgend = bts.find(b'\xff\xd9')
-
+			print(jpgend)
 
 		if jpghead > -1 and jpgend > -1:
 			jpg = bts[jpghead:jpgend + 2]
 			bts = bts[jpgend + 2:]
-
+			print("got hereeeeeeeeee")
 			img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
 			img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 				# h,w=img.shape[:2]
@@ -48,6 +52,7 @@ def Esp32Frame(stream,img,bts,ret):
 
 			k = cv2.waitKey(5)
 			ret = True
+			break
 
 
 		else:
@@ -100,8 +105,9 @@ stereo = cv2.StereoSGBM_create()
 while True:
 
 	# Capturing and storing left and right camera images
-	btsL,imgL,retL = Esp32Frame(streamLeft, imgL,btsL,retL)
-	btsR,imgR,retR = Esp32Frame(streamRight, imgR,btsR,retR)
+	btsL,imgL,retL = Esp32Frame(streamLeft,btsL,retL)
+	print("here 22222")
+	btsR,imgR,retR = Esp32Frame(streamRight,btsR,retR)
 
 
 	# Proceed only if the frames have been captured
