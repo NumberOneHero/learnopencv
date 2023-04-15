@@ -106,7 +106,7 @@ while True:
 
 	# Capturing and storing left and right camera images
 	btsL,imgL,retL = Esp32Frame(streamLeft,btsL,retL)
-	print("here 22222")
+
 	btsR,imgR,retR = Esp32Frame(streamRight,btsR,retR)
 
 
