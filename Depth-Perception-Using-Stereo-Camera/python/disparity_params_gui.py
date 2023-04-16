@@ -13,7 +13,7 @@ btsL = b''
 # change to your ESP32-CAM ip
 urlLeft = "http://192.168.137.170:81/stream"
 urlRight = "http://192.168.137.66:81/stream"
-CAMERA_BUFFRER_SIZE = 20000
+CAMERA_BUFFRER_SIZE = 1024
 streamLeft = urlopen(urlLeft)
 streamRight = urlopen(urlRight)
 num=0
@@ -25,16 +25,16 @@ imgR = None
 imgL = None
 def Esp32Frame(stream,bts,ret):
 	jpghead = -1
-	jgpend = -1
+	jpgend = -1
 
-	while (jpghead < 0 or jgpend < 0):
+	while (jpghead < 0 or jpgend < 0):
 		bts += stream.read(CAMERA_BUFFRER_SIZE)
 
 		if jpghead < 0 :
 			jpghead = bts.find(b'\xff\xd8')
 			print("jpghead < 0")
 			print(jpghead)
-		if jgpend < 0:
+		if jpgend < 0:
 			print("jpgend < 0")
 
 			jpgend = bts.find(b'\xff\xd9')
@@ -44,6 +44,7 @@ def Esp32Frame(stream,bts,ret):
 			jpg = bts[jpghead:jpgend + 2]
 			bts = bts[jpgend + 2:]
 			print("got hereeeeeeeeee")
+			print(jpgend)
 			img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
 			img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 				# h,w=img.shape[:2]
@@ -52,7 +53,7 @@ def Esp32Frame(stream,bts,ret):
 
 			k = cv2.waitKey(5)
 			ret = True
-			break
+
 
 
 		else:
