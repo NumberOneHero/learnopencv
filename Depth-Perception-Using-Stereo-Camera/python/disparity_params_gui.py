@@ -13,7 +13,7 @@ btsL = b''
 # change to your ESP32-CAM ip
 urlLeft = "http://192.168.137.170:81/stream"
 urlRight = "http://192.168.137.66:81/stream"
-CAMERA_BUFFRER_SIZE = 1024
+CAMERA_BUFFRER_SIZE = 20000
 streamLeft = urlopen(urlLeft)
 streamRight = urlopen(urlRight)
 num=0
@@ -101,7 +101,7 @@ cv2.createTrackbar('disp12MaxDiff','disp',5,25,nothing)
 cv2.createTrackbar('minDisparity','disp',5,25,nothing)
 
 # Creating an object of StereoBM algorithm
-stereo = cv2.StereoSGBM_create()
+stereo = cv2.StereoBM_create()
 
 while True:
 
