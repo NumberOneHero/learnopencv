@@ -3,14 +3,70 @@ import cv2
 import matplotlib
 import matplotlib.pyplot as plt
 
+from urllib.request import urlopen
 
-# Check for left and right camera IDs
-# These values can change depending on the system
-CamL_id = 2 # Camera ID for left camera
-CamR_id = 0 # Camera ID for right camera
+pTime = 0
 
-CamL= cv2.VideoCapture(CamL_id)
-CamR= cv2.VideoCapture(CamR_id)
+
+
+
+
+btsR= b''
+btsL = b''
+# change to your ESP32-CAM ip
+urlLeft = "http://192.168.137.170:81/stream"
+urlRight = "http://192.168.137.66:81/stream"
+CAMERA_BUFFRER_SIZE = 20000
+streamLeft = urlopen(urlLeft)
+streamRight = urlopen(urlRight)
+num=0
+retL = False
+retR = False
+ret = None
+
+imgR = None
+imgL = None
+def Esp32Frame(stream,bts,ret):
+	jpghead = -1
+	jpgend = -1
+
+	while (jpghead < 0 or jpgend < 0):
+		bts += stream.read(CAMERA_BUFFRER_SIZE)
+
+		if jpghead < 0 :
+			jpghead = bts.find(b'\xff\xd8')
+			print("jpghead < 0")
+			print(jpghead)
+		if jpgend < 0:
+			print("jpgend < 0")
+
+			jpgend = bts.find(b'\xff\xd9')
+			print(jpgend)
+
+		if jpghead > -1 and jpgend > -1:
+			jpg = bts[jpghead:jpgend + 2]
+			bts = bts[jpgend + 2:]
+			print("got hereeeeeeeeee")
+			print(jpgend)
+			img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+			img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+				# h,w=img.shape[:2]
+				# print('影像大小 高:' + str(h) + '寬：' + str(w))
+				# img2 = img
+
+			k = cv2.waitKey(5)
+			ret = True
+
+
+
+		else:
+			ret= False
+
+
+
+	return bts , img,ret
+
+
 
 # Reading the mapping values for stereo image rectification
 cv_file = cv2.FileStorage("../data/stereo_rectify_maps.xml", cv2.FILE_STORAGE_READ)
