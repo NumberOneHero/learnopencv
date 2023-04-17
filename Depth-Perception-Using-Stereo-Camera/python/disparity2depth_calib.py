@@ -128,9 +128,12 @@ stereo = cv2.StereoBM_create()
 while True:
 
 	# Capturing and storing left and right camera images
-	retR, imgR= CamR.read()
-	retL, imgL= CamL.read()
-	
+	btsL,imgL,retL = Esp32Frame(streamLeft,btsL,retL)
+
+	btsR,imgR,retR = Esp32Frame(streamRight,btsR,retR)
+
+
+
 	# Proceed only if the frames have been captured
 	if retL and retR:
 		imgR_gray = cv2.cvtColor(imgR,cv2.COLOR_BGR2GRAY)
@@ -187,9 +190,9 @@ while True:
 		if Z < min_dist:
 			break
 	
-	else:
-		CamL= cv2.VideoCapture(CamL_id)
-		CamR= cv2.VideoCapture(CamR_id)
+	
+		
+		
 
 # solving for M in the following equation
 # ||    depth = M * (1/disparity)   ||
