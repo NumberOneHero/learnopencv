@@ -122,7 +122,7 @@ cv2.resizeWindow('left image',600,600)
 cv2.setMouseCallback('disp',mouse_click)
 
 # Creating an object of StereoBM algorithm
-stereo = cv2.StereoBM_create()
+stereo = cv2.StereoSGBM_create()
 
 while True:
 
@@ -157,10 +157,10 @@ while True:
 		# Setting the updated parameters before computing disparity map
 		stereo.setNumDisparities(numDisparities)
 		stereo.setBlockSize(blockSize)
-		stereo.setPreFilterType(preFilterType)
-		stereo.setPreFilterSize(preFilterSize)
-		stereo.setPreFilterCap(preFilterCap)
-		stereo.setTextureThreshold(textureThreshold)
+		#stereo.setPreFilterType(preFilterType)
+		#stereo.setPreFilterSize(preFilterSize)
+		#stereo.setPreFilterCap(preFilterCap)
+		#stereo.setTextureThreshold(textureThreshold)
 		stereo.setUniquenessRatio(uniquenessRatio)
 		stereo.setSpeckleRange(speckleRange)
 		stereo.setSpeckleWindowSize(speckleWindowSize)
