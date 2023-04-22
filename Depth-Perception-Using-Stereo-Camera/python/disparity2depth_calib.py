@@ -35,19 +35,18 @@ def Esp32Frame(stream,bts,ret):
 
 		if jpghead < 0 :
 			jpghead = bts.find(b'\xff\xd8')
-			print("jpghead < 0")
-			print(jpghead)
+
 		if jpgend < 0:
-			print("jpgend < 0")
+
 
 			jpgend = bts.find(b'\xff\xd9')
-			print(jpgend)
+
 
 		if jpghead > -1 and jpgend > -1:
 			jpg = bts[jpghead:jpgend + 2]
 			bts = bts[jpgend + 2:]
-			print("got hereeeeeeeeee")
-			print(jpgend)
+
+
 			img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
 			img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 				# h,w=img.shape[:2]
@@ -69,7 +68,7 @@ def Esp32Frame(stream,bts,ret):
 
 
 # Reading the mapping values for stereo image rectification
-cv_file = cv2.FileStorage("../data/stereo_rectify_maps.xml", cv2.FILE_STORAGE_READ)
+cv_file = cv2.FileStorage("params_py.xml", cv2.FILE_STORAGE_READ)
 Left_Stereo_Map_x = cv_file.getNode("Left_Stereo_Map_x").mat()
 Left_Stereo_Map_y = cv_file.getNode("Left_Stereo_Map_y").mat()
 Right_Stereo_Map_x = cv_file.getNode("Right_Stereo_Map_x").mat()
@@ -86,7 +85,7 @@ sample_delta = 40 # Distance between two sampling points (in cm)
 Z = max_dist 
 Value_pairs = []
 
-disp_map = np.zeros((600,600,3))
+disp_map = np.zeros((900,900,3))
 
 
 # Reading the stored the StereoBM parameters
