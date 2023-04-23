@@ -1,18 +1,80 @@
 import numpy as np 
 import cv2
 
+from urllib.request import urlopen
 
-# Check for left and right camera IDs
-# These values can change depending on the system
-CamL_id = 2 # Camera ID for left camera
-CamR_id = 0 # Camera ID for right camera
+pTime = 0
 
 
-CamL= cv2.VideoCapture(CamL_id)
-CamR= cv2.VideoCapture(CamR_id)
+
+kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
+
+
+
+
+
+
+
+
+
+btsR= b''
+btsL = b''
+# change to your ESP32-CAM ip
+urlLeft = "http://192.168.137.231:81/stream"
+urlRight = "http://192.168.137.35:81/stream"
+CAMERA_BUFFRER_SIZE = 20000
+streamLeft = urlopen(urlLeft)
+streamRight = urlopen(urlRight)
+num=0
+retL = False
+retR = False
+ret = None
+
+imgR = None
+imgL = None
+def Esp32Frame(stream,bts,ret):
+	jpghead = -1
+	jpgend = -1
+
+	while (jpghead < 0 or jpgend < 0):
+		bts += stream.read(CAMERA_BUFFRER_SIZE)
+
+		if jpghead < 0 :
+			jpghead = bts.find(b'\xff\xd8')
+
+		if jpgend < 0:
+
+
+			jpgend = bts.find(b'\xff\xd9')
+
+
+		if jpghead > -1 and jpgend > -1:
+			jpg = bts[jpghead:jpgend + 2]
+			bts = bts[jpgend + 2:]
+
+
+			img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+			img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+				# h,w=img.shape[:2]
+				# print('影像大小 高:' + str(h) + '寬：' + str(w))
+				# img2 = img
+
+			k = cv2.waitKey(5)
+			ret = True
+
+
+
+		else:
+			ret= False
+
+
+
+	return bts , img,ret
+
+
 
 # Reading the mapping values for stereo image rectification
-cv_file = cv2.FileStorage("../data/stereo_rectify_maps.xml", cv2.FILE_STORAGE_READ)
+cv_file = cv2.FileStorage("params_py.xml", cv2.FILE_STORAGE_READ)
 Left_Stereo_Map_x = cv_file.getNode("Left_Stereo_Map_x").mat()
 Left_Stereo_Map_y = cv_file.getNode("Left_Stereo_Map_y").mat()
 Right_Stereo_Map_x = cv_file.getNode("Right_Stereo_Map_x").mat()
@@ -23,9 +85,9 @@ disparity = None
 depth_map = None
 
 # These parameters can vary according to the setup
-max_depth = 400 # maximum distance the setup can measure (in cm)
-min_depth = 50 # minimum distance the setup can measure (in cm)
-depth_thresh = 100.0 # Threshold for SAFE distance (in cm)
+max_depth = 50 # maximum distance the setup can measure (in cm)
+min_depth = 10 # minimum distance the setup can measure (in cm)
+depth_thresh = 45.0 # Threshold for SAFE distance (in cm)
 
 # Reading the stored the StereoBM parameters
 cv_file = cv2.FileStorage("../data/depth_estmation_params_py.xml", cv2.FILE_STORAGE_READ)
@@ -57,7 +119,7 @@ cv2.setMouseCallback('disp',mouse_click)
 output_canvas = None
 
 # Creating an object of StereoBM algorithm
-stereo = cv2.StereoBM_create()
+stereo = cv2.StereoSGBM_create()
 
 def obstacle_avoid():
 
@@ -95,12 +157,16 @@ def obstacle_avoid():
 	
 
 while True:
-	retR, imgR= CamR.read()
-	retL, imgL= CamL.read()
+	# Capturing and storing left and right camera images
+	btsL,imgL,retL = Esp32Frame(streamLeft,btsL,retL)
+
+	btsR,imgR,retR = Esp32Frame(streamRight,btsR,retR)
+
+
 	
 	if retL and retR:
 		
-		output_canvas = imgL.copy()
+
 
 		imgR_gray = cv2.cvtColor(imgR,cv2.COLOR_BGR2GRAY)
 		imgL_gray = cv2.cvtColor(imgL,cv2.COLOR_BGR2GRAY)
@@ -112,8 +178,9 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		
+		#Left_nice = cv2.GaussianBlur(Left_nice,(15,15),0)
 		# Applying stereo image rectification on the right image
+		output_canvas = Left_nice.copy()
 		Right_nice= cv2.remap(imgR_gray,
 							Right_Stereo_Map_x,
 							Right_Stereo_Map_y,
@@ -121,13 +188,16 @@ while True:
 							cv2.BORDER_CONSTANT,
 							0)
 
+		#Right_nice = cv2.GaussianBlur(Right_nice,(15,15),0)
+
+
 		# Setting the updated parameters before computing disparity map
 		stereo.setNumDisparities(numDisparities)
 		stereo.setBlockSize(blockSize)
-		stereo.setPreFilterType(preFilterType)
-		stereo.setPreFilterSize(preFilterSize)
+		#stereo.setPreFilterType(preFilterType)
+		#stereo.setPreFilterSize(preFilterSize)
 		stereo.setPreFilterCap(preFilterCap)
-		stereo.setTextureThreshold(textureThreshold)
+		#stereo.setTextureThreshold(textureThreshold)
 		stereo.setUniquenessRatio(uniquenessRatio)
 		stereo.setSpeckleRange(speckleRange)
 		stereo.setSpeckleWindowSize(speckleWindowSize)
@@ -160,5 +230,8 @@ while True:
 			break
 	
 	else:
-		CamL= cv2.VideoCapture(CamL_id)
-		CamR= cv2.VideoCapture(CamR_id)
+		# Capturing and storing left and right camera images
+		btsL, imgL, retL = Esp32Frame(streamLeft, btsL, retL)
+
+		btsR, imgR, retR = Esp32Frame(streamRight, btsR, retR)
+

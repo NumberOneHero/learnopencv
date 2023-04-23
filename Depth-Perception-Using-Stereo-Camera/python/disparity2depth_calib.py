@@ -14,8 +14,8 @@ pTime = 0
 btsR= b''
 btsL = b''
 # change to your ESP32-CAM ip
-urlLeft = "http://192.168.137.170:81/stream"
-urlRight = "http://192.168.137.66:81/stream"
+urlLeft = "http://192.168.137.231:81/stream"
+urlRight = "http://192.168.137.35:81/stream"
 CAMERA_BUFFRER_SIZE = 20000
 streamLeft = urlopen(urlLeft)
 streamRight = urlopen(urlRight)
@@ -78,9 +78,9 @@ cv_file.release()
 # These parameters can vary according to the setup
 # Keeping the target object at max_dist we store disparity values
 # after every sample_delta distance.
-max_dist = 100 # max distance to keep the target object (in cm)
-min_dist = 20 # Minimum distance the stereo setup can measure (in cm)
-sample_delta = 10 # Distance between two sampling points (in cm)
+max_dist = 50 # max distance to keep the target object (in cm)
+min_dist = 10 # Minimum distance the stereo setup can measure (in cm)
+sample_delta = 5 # Distance between two sampling points (in cm)
 
 Z = max_dist 
 Value_pairs = []
@@ -117,8 +117,7 @@ def mouse_click(event,x,y,flags,param):
 
 cv2.namedWindow('disp',cv2.WINDOW_NORMAL)
 cv2.resizeWindow('disp',600,600)
-cv2.namedWindow('left image',cv2.WINDOW_NORMAL)
-cv2.resizeWindow('left image',600,600)
+
 cv2.setMouseCallback('disp',mouse_click)
 
 # Creating an object of StereoBM algorithm
@@ -159,7 +158,7 @@ while True:
 		stereo.setBlockSize(blockSize)
 		#stereo.setPreFilterType(preFilterType)
 		#stereo.setPreFilterSize(preFilterSize)
-		#stereo.setPreFilterCap(preFilterCap)
+		stereo.setPreFilterCap(preFilterCap)
 		#stereo.setTextureThreshold(textureThreshold)
 		stereo.setUniquenessRatio(uniquenessRatio)
 		stereo.setSpeckleRange(speckleRange)
@@ -181,8 +180,8 @@ while True:
 
 		# Displaying the disparity map
 		cv2.imshow("disp",disparity)
-		cv2.imshow("left image",imgL)
-
+		cv2.imshow("left image",Left_nice)
+		cv2.imshow("rigt image", Right_nice)
 		if cv2.waitKey(1) == 27:
 			break
 		

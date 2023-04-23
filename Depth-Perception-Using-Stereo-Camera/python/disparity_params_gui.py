@@ -11,9 +11,9 @@ pTime = 0
 btsR= b''
 btsL = b''
 # change to your ESP32-CAM ip
-urlLeft = "http://192.168.137.170:81/stream"
-urlRight = "http://192.168.137.66:81/stream"
-CAMERA_BUFFRER_SIZE = 20000
+urlLeft = "http://192.168.137.231:81/stream"
+urlRight = "http://192.168.137.35:81/stream"
+CAMERA_BUFFRER_SIZE = 1024
 streamLeft = urlopen(urlLeft)
 streamRight = urlopen(urlRight)
 num=0
@@ -101,7 +101,7 @@ cv2.createTrackbar('disp12MaxDiff','disp',5,25,nothing)
 cv2.createTrackbar('minDisparity','disp',5,25,nothing)
 
 # Creating an object of StereoBM algorithm
-stereo = cv2.StereoBM_create()
+stereo = cv2.StereoSGBM_create()
 
 while True:
 
@@ -148,10 +148,10 @@ while True:
 		# Setting the updated parameters before computing disparity map
 		stereo.setNumDisparities(numDisparities)
 		stereo.setBlockSize(blockSize)
-		stereo.setPreFilterType(preFilterType)
-		stereo.setPreFilterSize(preFilterSize)
+		#stereo.setPreFilterType(preFilterType)
+		#stereo.setPreFilterSize(preFilterSize)
 		stereo.setPreFilterCap(preFilterCap)
-		stereo.setTextureThreshold(textureThreshold)
+		#stereo.setTextureThreshold(textureThreshold)
 		stereo.setUniquenessRatio(uniquenessRatio)
 		stereo.setSpeckleRange(speckleRange)
 		stereo.setSpeckleWindowSize(speckleWindowSize)

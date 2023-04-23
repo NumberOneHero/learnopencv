@@ -13,9 +13,9 @@ sTime= 0
 btsR= b''
 btsL = b''
 # change to your ESP32-CAM ip
-urlLeft = "http://192.168.137.170/capture"
-urlRight = "http://192.168.137.66/capture"
-CAMERA_BUFFRER_SIZE = 20000
+urlLeft = "http://192.168.137.231/capture"
+urlRight = "http://192.168.137.35/capture"
+CAMERA_BUFFRER_SIZE = 106500
 
 num=0
 retL = False
