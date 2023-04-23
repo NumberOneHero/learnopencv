@@ -10,6 +10,6 @@
 <speckleRange>0</speckleRange>
 <speckleWindowSize>0</speckleWindowSize>
 <disp12MaxDiff>25</disp12MaxDiff>
-<minDisparity>0</minDisparity>
+<minDisparity>15</minDisparity>
 <M>2.2704643936966971e+01</M>
 </opencv_storage>
