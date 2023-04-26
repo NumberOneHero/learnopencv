@@ -79,8 +79,8 @@ cv_file.release()
 # Keeping the target object at max_dist we store disparity values
 # after every sample_delta distance.
 max_dist = 50 # max distance to keep the target object (in cm)
-min_dist = 10 # Minimum distance the stereo setup can measure (in cm)
-sample_delta = 5 # Distance between two sampling points (in cm)
+min_dist = 20 # Minimum distance the stereo setup can measure (in cm)
+sample_delta = 5# Distance between two sampling points (in cm)
 
 Z = max_dist 
 Value_pairs = []
@@ -144,7 +144,7 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		
+		Left_nice = cv2.medianBlur(Left_nice, 29)
 		# Applying stereo image rectification on the right image
 		Right_nice= cv2.remap(imgR_gray,
 							Right_Stereo_Map_x,
@@ -152,7 +152,7 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-
+		Right_nice = cv2.medianBlur(Right_nice, 29)
 		# Setting the updated parameters before computing disparity map
 		stereo.setNumDisparities(numDisparities)
 		stereo.setBlockSize(blockSize)

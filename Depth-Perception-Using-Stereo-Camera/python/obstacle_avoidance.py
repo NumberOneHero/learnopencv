@@ -14,9 +14,6 @@ kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
 
 
 
-
-
-
 btsR= b''
 btsL = b''
 # change to your ESP32-CAM ip
@@ -130,6 +127,8 @@ def obstacle_avoid():
 	if np.sum(mask)/255.0 > 0.01*mask.shape[0]*mask.shape[1]:
 
 		# Contour detection 
+
+
 		contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 		cnts = sorted(contours, key=cv2.contourArea, reverse=True)
 		
@@ -178,7 +177,7 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		#Left_nice = cv2.GaussianBlur(Left_nice,(15,15),0)
+		Left_nice = cv2.medianBlur(Left_nice, 29)
 		# Applying stereo image rectification on the right image
 		output_canvas = Left_nice.copy()
 		Right_nice= cv2.remap(imgR_gray,
@@ -188,7 +187,7 @@ while True:
 							cv2.BORDER_CONSTANT,
 							0)
 
-		#Right_nice = cv2.GaussianBlur(Right_nice,(15,15),0)
+		Right_nice = cv2.medianBlur(Right_nice, 29)
 
 
 		# Setting the updated parameters before computing disparity map
