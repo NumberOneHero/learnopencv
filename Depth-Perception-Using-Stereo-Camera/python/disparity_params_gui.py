@@ -123,7 +123,7 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		Left_nice = cv2.bilateralFilter(Left_nice, 30, 25, 25)
+		Left_nice = cv2.bilateralFilter(Left_nice, 30, 15, 15)
 		# Applying stereo image rectification on the right image
 		Right_nice= cv2.remap(imgR_gray,
 							Right_Stereo_Map_x,
@@ -131,7 +131,7 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		Right_nice = cv2.bilateralFilter(Right_nice, 30, 25, 25)
+		Right_nice = cv2.bilateralFilter(Right_nice, 30, 15, 15)
 		# Updating the parameters based on the trackbar positions
 		numDisparities = cv2.getTrackbarPos('numDisparities','disp')*16
 		blockSize = cv2.getTrackbarPos('blockSize','disp')*2 + 5

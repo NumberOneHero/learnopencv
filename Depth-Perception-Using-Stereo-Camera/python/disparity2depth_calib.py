@@ -16,7 +16,7 @@ btsL = b''
 # change to your ESP32-CAM ip
 urlLeft = "http://192.168.137.231:81/stream"
 urlRight = "http://192.168.137.35:81/stream"
-CAMERA_BUFFRER_SIZE = 20000
+CAMERA_BUFFRER_SIZE = 1024
 streamLeft = urlopen(urlLeft)
 streamRight = urlopen(urlRight)
 num=0
@@ -78,8 +78,8 @@ cv_file.release()
 # These parameters can vary according to the setup
 # Keeping the target object at max_dist we store disparity values
 # after every sample_delta distance.
-max_dist = 50 # max distance to keep the target object (in cm)
-min_dist = 20 # Minimum distance the stereo setup can measure (in cm)
+max_dist = 40 # max distance to keep the target object (in cm)
+min_dist = 15 # Minimum distance the stereo setup can measure (in cm)
 sample_delta = 5# Distance between two sampling points (in cm)
 
 Z = max_dist 
@@ -144,7 +144,7 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		Left_nice = cv2.medianBlur(Left_nice, 29)
+		Left_nice = cv2.bilateralFilter(Left_nice, 5, 15, 15)
 		# Applying stereo image rectification on the right image
 		Right_nice= cv2.remap(imgR_gray,
 							Right_Stereo_Map_x,
@@ -152,7 +152,6 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		Right_nice = cv2.medianBlur(Right_nice, 29)
 		# Setting the updated parameters before computing disparity map
 		stereo.setNumDisparities(numDisparities)
 		stereo.setBlockSize(blockSize)
