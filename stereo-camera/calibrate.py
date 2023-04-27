@@ -1,6 +1,7 @@
 import numpy as np
 import cv2
 from tqdm import tqdm
+import  math
 
 # Set the path to the images captured by the left and right cameras
 pathL = "./data/stereoL/"
@@ -51,14 +52,14 @@ retL, mtxL, distL, rvecsL, tvecsL = cv2.calibrateCamera(obj_pts,img_ptsL,imgL_gr
 hL,wL= imgL_gray.shape[:2]
 print(retL)
 new_mtxL, roiL= cv2.getOptimalNewCameraMatrix(mtxL,distL,(wL,hL),1,(wL,hL))
-
+print(new_mtxL)
 print("Calculating right camera parameters ... ")
 # Calibrating right camera
 retR, mtxR, distR, rvecsR, tvecsR = cv2.calibrateCamera(obj_pts,img_ptsR,imgR_gray.shape[::-1],None,None)
 hR,wR= imgR_gray.shape[:2]
 print(retR)
 new_mtxR, roiR= cv2.getOptimalNewCameraMatrix(mtxR,distR,(wR,hR),1,(wR,hR))
-
+print(new_mtxR)
 
 print("Stereo calibration .....")
 flags = 0
@@ -81,6 +82,11 @@ retS, new_mtxL, distL, new_mtxR, distR, Rot, Trns, Emat, Fmat = cv2.stereoCalibr
                                                           criteria_stereo,
                                                           flags)
 print(retS)
+print(new_mtxL)
+print(new_mtxR)
+
+Fov = 2 * np.arctan(0.5 * (480 / 446.05178833)) * 180 / math.pi
+print(Fov)
 # Once we know the transformation between the two cameras we can perform stereo rectification
 # StereoRectify function
 rectify_scale= 1 # if 0 image croped, if 1 image not croped
