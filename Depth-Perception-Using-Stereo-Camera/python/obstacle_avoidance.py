@@ -17,8 +17,8 @@ kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
 btsR= b''
 btsL = b''
 # change to your ESP32-CAM ip
-urlLeft = "http://192.168.137.231:81/stream"
-urlRight = "http://192.168.137.35:81/stream"
+urlLeft = "http://192.168.50.159:81/stream"
+urlRight = "http://192.168.50.246:81/stream"
 CAMERA_BUFFRER_SIZE = 1024
 streamLeft = urlopen(urlLeft)
 streamRight = urlopen(urlRight)

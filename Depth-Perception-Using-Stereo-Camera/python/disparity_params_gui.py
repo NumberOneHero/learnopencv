@@ -11,8 +11,8 @@ pTime = 0
 btsR= b''
 btsL = b''
 # change to your ESP32-CAM ip
-urlLeft = "http://192.168.137.231:81/stream"
-urlRight = "http://192.168.137.35:81/stream"
+urlLeft = "http://192.168.50.159:81/stream"
+urlRight = "http://192.168.50.246:81/stream"
 CAMERA_BUFFRER_SIZE = 1024
 streamLeft = urlopen(urlLeft)
 streamRight = urlopen(urlRight)
@@ -24,44 +24,45 @@ ret = None
 imgR = None
 imgL = None
 def Esp32Frame(stream,bts,ret):
-	jpghead = -1
-	jpgend = -1
+    jpghead = -1
+    jpgend = -1
 
-	while (jpghead < 0 or jpgend < 0):
-		bts += stream.read(CAMERA_BUFFRER_SIZE)
+    while (jpghead < 0 or jpgend < 0):
 
-		if jpghead < 0 :
-			jpghead = bts.find(b'\xff\xd8')
-			print("jpghead < 0")
-			print(jpghead)
-		if jpgend < 0:
-			print("jpgend < 0")
+        bts += stream.read(CAMERA_BUFFRER_SIZE)
 
-			jpgend = bts.find(b'\xff\xd9')
-			print(jpgend)
-
-		if jpghead > -1 and jpgend > -1:
-			jpg = bts[jpghead:jpgend + 2]
-			bts = bts[jpgend + 2:]
-			print("got hereeeeeeeeee")
-			print(jpgend)
-			img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-			img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-				# h,w=img.shape[:2]
-				# print('影像大小 高:' + str(h) + '寬：' + str(w))
-				# img2 = img
-
-			k = cv2.waitKey(5)
-			ret = True
+        if jpghead < 0 :
+            jpghead = bts.find(b'\xff\xd8')
 
 
+        if jpgend < 0:
 
-		else:
-			ret= False
+
+            jpgend = bts.find(b'\xff\xd9')
+
+
+        if jpghead > -1 and jpgend > -1 and jpgend>jpghead:
+            jpg = bts[jpghead:jpgend + 2]
+            bts = bts[jpgend + 2:]
+
+
+            img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+            img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+
+
+            k = cv2.waitKey(10)
+            ret = True
 
 
 
-	return bts , img,ret
+        elif jpghead > -1 and jpgend > -1 and jpgend<jpghead :
+            jpgend = -1
+            jpghead = -1
+            ret= False
+
+
+
+    return bts , img,ret
 
 
 
@@ -123,7 +124,7 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		Left_nice = cv2.bilateralFilter(Left_nice, 30, 15, 15)
+		Left_nice = cv2.bilateralFilter(Left_nice,5, 15, 15)
 		# Applying stereo image rectification on the right image
 		Right_nice= cv2.remap(imgR_gray,
 							Right_Stereo_Map_x,
@@ -131,7 +132,7 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		Right_nice = cv2.bilateralFilter(Right_nice, 30, 15, 15)
+		Right_nice = cv2.bilateralFilter(Right_nice, 5, 15, 15)
 		# Updating the parameters based on the trackbar positions
 		numDisparities = cv2.getTrackbarPos('numDisparities','disp')*16
 		blockSize = cv2.getTrackbarPos('blockSize','disp')*2 + 5

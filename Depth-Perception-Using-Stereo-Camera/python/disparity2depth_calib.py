@@ -14,8 +14,8 @@ pTime = 0
 btsR= b''
 btsL = b''
 # change to your ESP32-CAM ip
-urlLeft = "http://192.168.137.231:81/stream"
-urlRight = "http://192.168.137.35:81/stream"
+urlLeft = "http://192.168.50.159:81/stream"
+urlRight = "http://192.168.50.246:81/stream"
 CAMERA_BUFFRER_SIZE = 1024
 streamLeft = urlopen(urlLeft)
 streamRight = urlopen(urlRight)
@@ -144,7 +144,7 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		Left_nice = cv2.bilateralFilter(Left_nice, 5, 15, 15)
+		Left_nice = cv2.bilateralFilter(Left_nice, 30, 15, 15)
 		# Applying stereo image rectification on the right image
 		Right_nice= cv2.remap(imgR_gray,
 							Right_Stereo_Map_x,
@@ -152,6 +152,7 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
+		Right_nice = cv2.bilateralFilter(Right_nice, 30, 15, 15)
 		# Setting the updated parameters before computing disparity map
 		stereo.setNumDisparities(numDisparities)
 		stereo.setBlockSize(blockSize)
