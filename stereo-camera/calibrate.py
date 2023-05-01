@@ -20,7 +20,7 @@ img_ptsL = []
 img_ptsR = []
 obj_pts = []
 
-for i in tqdm(range(1,14)):
+for i in tqdm(range(1,13)):
 	imgL = cv2.imread(pathL+"img%d.png"%i)
 	imgR = cv2.imread(pathR+"img%d.png"%i)
 	imgL_gray = cv2.imread(pathL+"img%d.png"%i,0)
@@ -83,7 +83,7 @@ retS, new_mtxL, distL, new_mtxR, distR, Rot, Trns, Emat, Fmat = cv2.stereoCalibr
                                                           flags)
 print(retS)
 print(new_mtxL)
-print(new_mtxR)
+print(distR)
 
 Fov = 2 * np.arctan(0.5 * (480 / 446.05178833)) * 180 / math.pi
 print(Fov)
