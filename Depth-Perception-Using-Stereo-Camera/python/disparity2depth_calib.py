@@ -53,7 +53,7 @@ def Esp32Frame(stream,bts,ret):
 				# print('影像大小 高:' + str(h) + '寬：' + str(w))
 				# img2 = img
 
-			k = cv2.waitKey(5)
+			k = cv2.waitKey(1)
 			ret = True
 
 

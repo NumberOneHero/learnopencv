@@ -50,7 +50,7 @@ def Esp32Frame(stream,bts,ret):
             img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 
 
-            k = cv2.waitKey(10)
+            k = cv2.waitKey(1)
             ret = True
 
 
@@ -99,7 +99,7 @@ cv2.createTrackbar('uniquenessRatio','disp',15,100,nothing)
 cv2.createTrackbar('speckleRange','disp',0,100,nothing)
 cv2.createTrackbar('speckleWindowSize','disp',3,25,nothing)
 cv2.createTrackbar('disp12MaxDiff','disp',5,25,nothing)
-cv2.createTrackbar('minDisparity','disp',5,25,nothing)
+cv2.createTrackbar('minDisparity','disp',5,200,nothing)
 
 # Creating an object of StereoBM algorithm
 stereo = cv2.StereoSGBM_create()
@@ -144,7 +144,7 @@ while True:
 		speckleRange = cv2.getTrackbarPos('speckleRange','disp')
 		speckleWindowSize = cv2.getTrackbarPos('speckleWindowSize','disp')*2
 		disp12MaxDiff = cv2.getTrackbarPos('disp12MaxDiff','disp')
-		minDisparity = cv2.getTrackbarPos('minDisparity','disp')
+		minDisparity = (cv2.getTrackbarPos('minDisparity','disp'))
 
 		# Setting the updated parameters before computing disparity map
 		stereo.setNumDisparities(numDisparities)
