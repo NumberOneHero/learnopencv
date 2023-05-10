@@ -13,8 +13,8 @@ sTime= 0
 btsR= b''
 btsL = b''
 # change to your ESP32-CAM ip
-urlLeft = "http://192.168.50.159/capture"
-urlRight = "http://192.168.50.246/capture"
+urlLeft = "http://192.168.50.16/capture"
+urlRight = "http://192.168.50.87/capture"
 CAMERA_BUFFRER_SIZE = 18000
 
 num=0
@@ -48,7 +48,7 @@ def Esp32Frame(url,bts,ret):
             print("got hereeeeeeeeee")
             print(jpgend)
             img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-            img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+            # img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 
 
             k = cv2.waitKey(5)
@@ -82,7 +82,7 @@ while True:
     dTime = time.time()
     if (retR == True) and (retL == True):
         img1_temp = imgL.copy()
-        cv2.putText(img1_temp,"%r"%timer,(50,50),1,5,(55,0,0),5)
+        cv2.putText(img1_temp,"%r"%timer,(50,50),1,5,(0,255,0),5)
         cv2.imshow('imgR',imgR)
         cv2.imshow('imgL',img1_temp)
 
