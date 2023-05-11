@@ -64,6 +64,7 @@ output_path = "./data/"
 start = time.time()
 T = 5
 count = 0
+oneTurn = False
 
 while True:
     print("START of code")
@@ -94,11 +95,14 @@ while True:
         CR, cornersL = cv2.findChessboardCorners(grayL,(9,6),None)
 
         # If corners are detected in left and right image then we save it.
-        if (CL == True) and (CR == True) and timer <=1:
+        if (CL == True) and (CR == True) and timer <=1 and oneTurn == False:
             count+=1
             cv2.imwrite(output_path+'stereoR/img%d.png'%count,imgR)
             cv2.imwrite(output_path+'stereoL/img%d.png'%count,imgL)
-
+            oneTurn = True
+        
+    if timer > 1 and timer <= 5 and timer <= 0:
+        oneTurn =False
     if timer <=0:
         start = time.time()
     
