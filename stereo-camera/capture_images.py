@@ -51,7 +51,7 @@ def Esp32Frame(url,bts,ret):
             # img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 
 
-            k = cv2.waitKey(5)
+            k = cv2.waitKey(1)
             ret = True
         else:
             ret = False
@@ -62,7 +62,7 @@ def Esp32Frame(url,bts,ret):
 output_path = "./data/"
 
 start = time.time()
-T = 10
+T = 5
 count = 0
 
 while True:
