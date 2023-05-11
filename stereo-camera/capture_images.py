@@ -15,7 +15,7 @@ btsL = b''
 # change to your ESP32-CAM ip
 urlLeft = "http://192.168.50.16/capture"
 urlRight = "http://192.168.50.87/capture"
-CAMERA_BUFFRER_SIZE = 18000
+CAMERA_BUFFRER_SIZE = 15000
 
 num=0
 retL = False
