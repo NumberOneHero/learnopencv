@@ -14,8 +14,8 @@ pTime = 0
 btsR= b''
 btsL = b''
 # change to your ESP32-CAM ip
-urlLeft = "http://192.168.50.159:81/stream"
-urlRight = "http://192.168.50.246:81/stream"
+urlLeft = "http://192.168.50.16:81/"
+urlRight = "http://192.168.50.87:81/"
 CAMERA_BUFFRER_SIZE = 1024
 streamLeft = urlopen(urlLeft)
 streamRight = urlopen(urlRight)
@@ -27,43 +27,51 @@ ret = None
 imgR = None
 imgL = None
 def Esp32Frame(stream,bts,ret):
-	jpghead = -1
-	jpgend = -1
+    jpghead = -1
+    jpgend = -1
 
-	while (jpghead < 0 or jpgend < 0):
-		bts += stream.read(CAMERA_BUFFRER_SIZE)
+    while (jpghead < 0 or jpgend < 0):
 
-		if jpghead < 0 :
-			jpghead = bts.find(b'\xff\xd8')
+        bts += stream.read(CAMERA_BUFFRER_SIZE)
 
-		if jpgend < 0:
-
-
-			jpgend = bts.find(b'\xff\xd9')
+        if jpghead < 0 :
+            jpghead = bts.find(b'\xff\xd8')
 
 
-		if jpghead > -1 and jpgend > -1:
-			jpg = bts[jpghead:jpgend + 2]
-			bts = bts[jpgend + 2:]
+        if jpgend < 0:
 
 
-			img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-			img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-				# h,w=img.shape[:2]
-				# print('影像大小 高:' + str(h) + '寬：' + str(w))
-				# img2 = img
-
-			k = cv2.waitKey(1)
-			ret = True
+            jpgend = bts.find(b'\xff\xd9')
 
 
+        if jpghead > -1 and jpgend > -1 and jpgend>jpghead:
+            jpg = bts[jpghead:jpgend + 2]
+            bts = bts[jpgend + 2:]
 
-		else:
-			ret= False
+
+            img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+            # img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+
+
+            k = cv2.waitKey(1)
+            ret = True
 
 
 
-	return bts , img,ret
+        elif jpghead > -1 and jpgend > -1 and jpgend<jpghead :
+            jpgend = -1
+            jpghead = -1
+            ret= False
+
+
+
+    return bts , img,ret
+
+
+
+
+
+
 
 
 
@@ -78,9 +86,9 @@ cv_file.release()
 # These parameters can vary according to the setup
 # Keeping the target object at max_dist we store disparity values
 # after every sample_delta distance.
-max_dist = 40 # max distance to keep the target object (in cm)
-min_dist = 15 # Minimum distance the stereo setup can measure (in cm)
-sample_delta = 5# Distance between two sampling points (in cm)
+max_dist = 20 # max distance to keep the target object (in cm)
+min_dist = 10 # Minimum distance the stereo setup can measure (in cm)
+sample_delta = 2# Distance between two sampling points (in cm)
 
 Z = max_dist 
 Value_pairs = []
@@ -121,7 +129,7 @@ cv2.resizeWindow('disp',600,600)
 cv2.setMouseCallback('disp',mouse_click)
 
 # Creating an object of StereoBM algorithm
-stereo = cv2.StereoSGBM_create()
+stereo = cv2.StereoBM_create()
 
 while True:
 
@@ -144,7 +152,7 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		Left_nice = cv2.bilateralFilter(Left_nice, 30, 15, 15)
+		# Left_nice = cv2.bilateralFilter(Left_nice, 5, 15, 15)
 		# Applying stereo image rectification on the right image
 		Right_nice= cv2.remap(imgR_gray,
 							Right_Stereo_Map_x,
@@ -152,7 +160,7 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		Right_nice = cv2.bilateralFilter(Right_nice, 30, 15, 15)
+		# Right_nice = cv2.bilateralFilter(Right_nice, 5, 15, 15)
 		# Setting the updated parameters before computing disparity map
 		stereo.setNumDisparities(numDisparities)
 		stereo.setBlockSize(blockSize)

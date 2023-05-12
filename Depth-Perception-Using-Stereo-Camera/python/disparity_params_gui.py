@@ -102,7 +102,7 @@ cv2.createTrackbar('disp12MaxDiff','disp',5,25,nothing)
 cv2.createTrackbar('minDisparity','disp',5,200,nothing)
 
 # Creating an object of StereoBM algorithm
-stereo = cv2.StereoSGBM_create()
+stereo = cv2.StereoBM_create()
 
 while True:
 

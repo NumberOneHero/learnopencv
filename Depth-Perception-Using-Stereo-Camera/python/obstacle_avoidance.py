@@ -13,12 +13,11 @@ kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
 
 
 
-
 btsR= b''
 btsL = b''
 # change to your ESP32-CAM ip
-urlLeft = "http://192.168.50.159:81/stream"
-urlRight = "http://192.168.50.246:81/stream"
+urlLeft = "http://192.168.50.16:81/"
+urlRight = "http://192.168.50.87:81/"
 CAMERA_BUFFRER_SIZE = 1024
 streamLeft = urlopen(urlLeft)
 streamRight = urlopen(urlRight)
@@ -30,43 +29,48 @@ ret = None
 imgR = None
 imgL = None
 def Esp32Frame(stream,bts,ret):
-	jpghead = -1
-	jpgend = -1
+    jpghead = -1
+    jpgend = -1
 
-	while (jpghead < 0 or jpgend < 0):
-		bts += stream.read(CAMERA_BUFFRER_SIZE)
+    while (jpghead < 0 or jpgend < 0):
 
-		if jpghead < 0 :
-			jpghead = bts.find(b'\xff\xd8')
+        bts += stream.read(CAMERA_BUFFRER_SIZE)
 
-		if jpgend < 0:
-
-
-			jpgend = bts.find(b'\xff\xd9')
+        if jpghead < 0 :
+            jpghead = bts.find(b'\xff\xd8')
 
 
-		if jpghead > -1 and jpgend > -1:
-			jpg = bts[jpghead:jpgend + 2]
-			bts = bts[jpgend + 2:]
+        if jpgend < 0:
 
 
-			img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
-			img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
-				# h,w=img.shape[:2]
-				# print('影像大小 高:' + str(h) + '寬：' + str(w))
-				# img2 = img
-
-			k = cv2.waitKey(1)
-			ret = True
+            jpgend = bts.find(b'\xff\xd9')
 
 
+        if jpghead > -1 and jpgend > -1 and jpgend>jpghead:
+            jpg = bts[jpghead:jpgend + 2]
+            bts = bts[jpgend + 2:]
 
-		else:
-			ret= False
+
+            img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
+            # img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
+
+
+            k = cv2.waitKey(1)
+            ret = True
 
 
 
-	return bts , img,ret
+        elif jpghead > -1 and jpgend > -1 and jpgend<jpghead :
+            jpgend = -1
+            jpghead = -1
+            ret= False
+
+
+
+    return bts , img,ret
+
+
+
 
 
 
@@ -82,9 +86,9 @@ disparity = None
 depth_map = None
 
 # These parameters can vary according to the setup
-max_depth = 50 # maximum distance the setup can measure (in cm)
+max_depth = 20 # maximum distance the setup can measure (in cm)
 min_depth = 10 # minimum distance the setup can measure (in cm)
-depth_thresh = 45.0 # Threshold for SAFE distance (in cm)
+depth_thresh = 19 # Threshold for SAFE distance (in cm)
 
 # Reading the stored the StereoBM parameters
 cv_file = cv2.FileStorage("../data/depth_estmation_params_py.xml", cv2.FILE_STORAGE_READ)
@@ -116,7 +120,7 @@ cv2.setMouseCallback('disp',mouse_click)
 output_canvas = None
 
 # Creating an object of StereoBM algorithm
-stereo = cv2.StereoSGBM_create()
+stereo = cv2.StereoBM_create()
 
 def obstacle_avoid():
 
@@ -148,6 +152,7 @@ def obstacle_avoid():
 			cv2.putText(output_canvas, "WARNING !", (x+5,y-40), 1, 2, (0,0,255), 2, 2)
 			cv2.putText(output_canvas, "Object at", (x+5,y), 1, 2, (100,10,25), 2, 2)
 			cv2.putText(output_canvas, "%.2f cm"%depth_mean, (x+5,y+40), 1, 2, (100,10,25), 2, 2)
+			cv2.rectangle(output_canvas, (x, y), (x + w, y + h), (255, 0, 0), 4)
 
 	else:
 		cv2.putText(output_canvas, "SAFE!", (100,100),1,3,(0,255,0),2,3)
@@ -177,7 +182,7 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		Left_nice = cv2.bilateralFilter(Left_nice, 5, 15, 15)		# Applying stereo image rectification on the right image
+		# Left_nice = cv2.bilateralFilter(Left_nice, 5, 15, 15)		# Applying stereo image rectification on the right image
 		output_canvas = Left_nice.copy()
 		Right_nice= cv2.remap(imgR_gray,
 							Right_Stereo_Map_x,
@@ -186,16 +191,16 @@ while True:
 							cv2.BORDER_CONSTANT,
 							0)
 
-		Right_nice = cv2.bilateralFilter(Right_nice, 5, 15, 15)
+		# Right_nice = cv2.bilateralFilter(Right_nice, 5, 15, 15)
 
 
 		# Setting the updated parameters before computing disparity map
 		stereo.setNumDisparities(numDisparities)
 		stereo.setBlockSize(blockSize)
-		#stereo.setPreFilterType(preFilterType)
-		#stereo.setPreFilterSize(preFilterSize)
+		stereo.setPreFilterType(preFilterType)
+		stereo.setPreFilterSize(preFilterSize)
 		stereo.setPreFilterCap(preFilterCap)
-		#stereo.setTextureThreshold(textureThreshold)
+		stereo.setTextureThreshold(textureThreshold)
 		stereo.setUniquenessRatio(uniquenessRatio)
 		stereo.setSpeckleRange(speckleRange)
 		stereo.setSpeckleWindowSize(speckleWindowSize)

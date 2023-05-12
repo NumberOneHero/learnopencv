@@ -30,7 +30,7 @@ def Esp32Frame(url,bts,ret):
 
     stream = urllib.request.urlopen(url)
     while (jpghead < 0 or jpgend < 0):
-        bts += stream.read(CAMERA_BUFFRER_SIZE)
+        bts += stream.read()
 
         if jpghead < 0 :
             jpghead = bts.find(b'\xff\xd8')
