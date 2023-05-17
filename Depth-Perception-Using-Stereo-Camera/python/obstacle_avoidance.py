@@ -86,9 +86,9 @@ disparity = None
 depth_map = None
 
 # These parameters can vary according to the setup
-max_depth = 20 # maximum distance the setup can measure (in cm)
-min_depth = 10 # minimum distance the setup can measure (in cm)
-depth_thresh = 19 # Threshold for SAFE distance (in cm)
+max_depth = 17 # maximum distance the setup can measure (in cm)
+min_depth = 7 # minimum distance the setup can measure (in cm)
+depth_thresh = 16 # Threshold for SAFE distance (in cm)
 
 # Reading the stored the StereoBM parameters
 cv_file = cv2.FileStorage("../data/depth_estmation_params_py.xml", cv2.FILE_STORAGE_READ)

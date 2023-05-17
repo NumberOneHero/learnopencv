@@ -1,16 +1,16 @@
 import cv2
-import numpy as np
-from urllib.request import urlopen
-
-pTime = 0
-
-
 
 
 
 btsR= b''
 btsL = b''
 # change to your ESP32-CAM ip
+import numpy as np
+from urllib.request import urlopen
+
+pTime = 0
+
+
 urlLeft = "http://192.168.50.16:81/"
 urlRight = "http://192.168.50.87:81/"
 CAMERA_BUFFRER_SIZE = 1024
@@ -89,17 +89,17 @@ def nothing(x):
 cv2.namedWindow('disp',cv2.WINDOW_NORMAL)
 cv2.resizeWindow('disp',600,600)
 
-cv2.createTrackbar('numDisparities','disp',1,17,nothing)
+cv2.createTrackbar('numDisparities','disp',17,17,nothing)
 cv2.createTrackbar('blockSize','disp',5,50,nothing)
 cv2.createTrackbar('preFilterType','disp',1,1,nothing)
-cv2.createTrackbar('preFilterSize','disp',2,25,nothing)
-cv2.createTrackbar('preFilterCap','disp',5,62,nothing)
-cv2.createTrackbar('textureThreshold','disp',10,100,nothing)
-cv2.createTrackbar('uniquenessRatio','disp',15,100,nothing)
+cv2.createTrackbar('preFilterSize','disp',0,25,nothing)
+cv2.createTrackbar('preFilterCap','disp',1,62,nothing)
+cv2.createTrackbar('textureThreshold','disp',1,100,nothing)
+cv2.createTrackbar('uniquenessRatio','disp',1,100,nothing)
 cv2.createTrackbar('speckleRange','disp',0,100,nothing)
-cv2.createTrackbar('speckleWindowSize','disp',3,25,nothing)
+cv2.createTrackbar('speckleWindowSize','disp',0,25,nothing)
 cv2.createTrackbar('disp12MaxDiff','disp',5,25,nothing)
-cv2.createTrackbar('minDisparity','disp',5,200,nothing)
+cv2.createTrackbar('minDisparity','disp',25,200,nothing)
 
 # Creating an object of StereoBM algorithm
 stereo = cv2.StereoBM_create()
@@ -149,10 +149,10 @@ while True:
 		# Setting the updated parameters before computing disparity map
 		stereo.setNumDisparities(numDisparities)
 		stereo.setBlockSize(blockSize)
-		#stereo.setPreFilterType(preFilterType)
-		#stereo.setPreFilterSize(preFilterSize)
+		stereo.setPreFilterType(preFilterType)
+		stereo.setPreFilterSize(preFilterSize)
 		stereo.setPreFilterCap(preFilterCap)
-		#stereo.setTextureThreshold(textureThreshold)
+		stereo.setTextureThreshold(textureThreshold)
 		stereo.setUniquenessRatio(uniquenessRatio)
 		stereo.setSpeckleRange(speckleRange)
 		stereo.setSpeckleWindowSize(speckleWindowSize)
