@@ -50,7 +50,7 @@ def Esp32Frame(stream,bts,ret):
             # img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 
 
-            k = cv2.waitKey(1)
+            k = cv2.waitKey(5)
             ret = True
 
 

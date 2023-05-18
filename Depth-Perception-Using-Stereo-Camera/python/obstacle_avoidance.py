@@ -133,7 +133,7 @@ def obstacle_avoid():
 		# Contour detection 
 
 
-		contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+		contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_EXTERNAL)
 		cnts = sorted(contours, key=cv2.contourArea, reverse=True)
 		
 		# Check if detected contour is significantly large (to avoid multiple tiny regions)

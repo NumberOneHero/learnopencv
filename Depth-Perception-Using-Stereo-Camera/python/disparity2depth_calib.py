@@ -53,7 +53,7 @@ def Esp32Frame(stream,bts,ret):
             # img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 
 
-            k = cv2.waitKey(1)
+            k = cv2.waitKey(5)
             ret = True
 
 
@@ -66,6 +66,10 @@ def Esp32Frame(stream,bts,ret):
 
 
     return bts , img,ret
+
+
+
+
 
 
 
@@ -164,10 +168,10 @@ while True:
 		# Setting the updated parameters before computing disparity map
 		stereo.setNumDisparities(numDisparities)
 		stereo.setBlockSize(blockSize)
-		#stereo.setPreFilterType(preFilterType)
-		#stereo.setPreFilterSize(preFilterSize)
+		stereo.setPreFilterType(preFilterType)
+		stereo.setPreFilterSize(preFilterSize)
 		stereo.setPreFilterCap(preFilterCap)
-		#stereo.setTextureThreshold(textureThreshold)
+		stereo.setTextureThreshold(textureThreshold)
 		stereo.setUniquenessRatio(uniquenessRatio)
 		stereo.setSpeckleRange(speckleRange)
 		stereo.setSpeckleWindowSize(speckleWindowSize)
