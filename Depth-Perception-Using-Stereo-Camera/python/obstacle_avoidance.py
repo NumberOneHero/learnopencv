@@ -133,7 +133,7 @@ def obstacle_avoid():
 		# Contour detection 
 
 
-		contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_EXTERNAL)
+		contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 		cnts = sorted(contours, key=cv2.contourArea, reverse=True)
 		
 		# Check if detected contour is significantly large (to avoid multiple tiny regions)
@@ -182,7 +182,7 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		# Left_nice = cv2.bilateralFilter(Left_nice, 5, 15, 15)		# Applying stereo image rectification on the right image
+		Left_nice = cv2.bilateralFilter(Left_nice, 5, 15, 15)		# Applying stereo image rectification on the right image
 		output_canvas = Left_nice.copy()
 		Right_nice= cv2.remap(imgR_gray,
 							Right_Stereo_Map_x,
@@ -191,7 +191,7 @@ while True:
 							cv2.BORDER_CONSTANT,
 							0)
 
-		# Right_nice = cv2.bilateralFilter(Right_nice, 5, 15, 15)
+		Right_nice = cv2.bilateralFilter(Right_nice, 5, 15, 15)
 
 
 		# Setting the updated parameters before computing disparity map
@@ -226,7 +226,7 @@ while True:
 
 		obstacle_avoid()
 		
-		cv2.resizeWindow("disp",700,700)
+		# cv2.resizeWindow("disp",700,700)
 		cv2.imshow("disp",disparity)
 
 		if cv2.waitKey(1) == 27:
