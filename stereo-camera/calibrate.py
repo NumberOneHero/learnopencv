@@ -4,8 +4,8 @@ from tqdm import tqdm
 import  math
 
 # Set the path to the images captured by the left and right cameras
-pathL = "./data/stereoL/"
-pathR = "./data/stereoR/"
+pathR = "./data/stereoL/"
+pathL = "./data/stereoR/"
 
 print("Extracting image coordinates of respective 3D pattern ....\n")
 
@@ -20,7 +20,7 @@ img_ptsL = []
 img_ptsR = []
 obj_pts = []
 
-for i in tqdm(range(1,35)):
+for i in tqdm(range(1,14)):
 	imgL = cv2.imread(pathL+"img%d.png"%i)
 	imgR = cv2.imread(pathR+"img%d.png"%i)
 	imgL_gray = cv2.imread(pathL+"img%d.png"%i,0)

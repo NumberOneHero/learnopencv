@@ -16,11 +16,12 @@ kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
 btsR= b''
 btsL = b''
 # change to your ESP32-CAM ip
-urlLeft = "http://192.168.50.16:81/"
-urlRight = "http://192.168.50.87:81/"
+urlLeft = "http://192.168.50.87:81/"
+urlRight = "http://192.168.50.16:81/"
 CAMERA_BUFFRER_SIZE = 1024
-streamLeft = urlopen(urlLeft)
+
 streamRight = urlopen(urlRight)
+streamLeft = urlopen(urlLeft)
 num=0
 retL = False
 retR = False
@@ -87,8 +88,8 @@ depth_map = None
 
 # These parameters can vary according to the setup
 max_depth = 17 # maximum distance the setup can measure (in cm)
-min_depth = 7 # minimum distance the setup can measure (in cm)
-depth_thresh = 16 # Threshold for SAFE distance (in cm)
+min_depth = 11 # minimum distance the setup can measure (in cm)
+depth_thresh = 12 # Threshold for SAFE distance (in cm)
 
 # Reading the stored the StereoBM parameters
 cv_file = cv2.FileStorage("../data/depth_estmation_params_py.xml", cv2.FILE_STORAGE_READ)

@@ -11,8 +11,8 @@ from urllib.request import urlopen
 pTime = 0
 
 
-urlLeft = "http://192.168.50.16:81/"
-urlRight = "http://192.168.50.87:81/"
+urlLeft = "http://192.168.50.87:81/"
+urlRight = "http://192.168.50.16:81/"
 CAMERA_BUFFRER_SIZE = 1024
 streamLeft = urlopen(urlLeft)
 streamRight = urlopen(urlRight)
@@ -50,7 +50,7 @@ def Esp32Frame(stream,bts,ret):
             # img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 
 
-            k = cv2.waitKey(5)
+            k = cv2.waitKey(1)
             ret = True
 
 
@@ -107,10 +107,10 @@ stereo = cv2.StereoBM_create()
 while True:
 
 	# Capturing and storing left and right camera images
-	btsL,imgL,retL = Esp32Frame(streamLeft,btsL,retL)
+
 
 	btsR,imgR,retR = Esp32Frame(streamRight,btsR,retR)
-
+	btsL, imgL, retL = Esp32Frame(streamLeft, btsL, retL)
 
 	# Proceed only if the frames have been captured
 	if retL and retR:

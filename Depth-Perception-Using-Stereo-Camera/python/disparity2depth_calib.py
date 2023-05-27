@@ -14,11 +14,12 @@ pTime = 0
 btsR= b''
 btsL = b''
 # change to your ESP32-CAM ip
-urlLeft = "http://192.168.50.16:81/"
-urlRight = "http://192.168.50.87:81/"
+urlLeft = "http://192.168.50.87:81/"
+urlRight = "http://192.168.50.16:81/"
 CAMERA_BUFFRER_SIZE = 1024
-streamLeft = urlopen(urlLeft)
+
 streamRight = urlopen(urlRight)
+streamLeft = urlopen(urlLeft)
 num=0
 retL = False
 retR = False
@@ -91,7 +92,7 @@ cv_file.release()
 # Keeping the target object at max_dist we store disparity values
 # after every sample_delta distance.
 max_dist = 17 # max distance to keep the target object (in cm)
-min_dist = 7 # Minimum distance the stereo setup can measure (in cm)
+min_dist = 10 # Minimum distance the stereo setup can measure (in cm)
 sample_delta = 1# Distance between two sampling points (in cm)
 
 Z = max_dist 
