@@ -20,7 +20,7 @@ btsL = b''
 
 urlLeft = "http://192.168.50.87/capture"
 urlRight = "http://192.168.50.16/capture"
-CAMERA_BUFFRER_SIZE = 15000
+CAMERA_BUFFRER_SIZE = 1024
 
 num=0
 retL = False
@@ -152,6 +152,7 @@ def obstacle_avoid():
 		cv2.putText(output_canvas, "SAFE!", (100,100),1,3,(0,255,0),2,3)
 
 	cv2.imshow('output_canvas',output_canvas)
+	cv2.imshow("mask",mask)
 	
 
 while True:
@@ -161,7 +162,6 @@ while True:
 
 	
 	if retL and retR:
-		
 
 
 		imgR_gray = cv2.cvtColor(imgR,cv2.COLOR_BGR2GRAY)
@@ -174,7 +174,7 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		Left_nice = cv2.bilateralFilter(Left_nice, 5, 15, 15)		# Applying stereo image rectification on the right image
+		Left_nice = cv2.bilateralFilter(Left_nice, 5, 30, 30)		# Applying stereo image rectification on the right image
 		output_canvas =  cv2.cvtColor(Left_nice, cv2.COLOR_GRAY2BGR)
 		Right_nice= cv2.remap(imgR_gray,
 							Right_Stereo_Map_x,
@@ -183,7 +183,7 @@ while True:
 							cv2.BORDER_CONSTANT,
 							0)
 
-		Right_nice = cv2.bilateralFilter(Right_nice, 5, 15, 15)
+		Right_nice = cv2.bilateralFilter(Right_nice, 5, 30, 30)
 
 
 		# Setting the updated parameters before computing disparity map
