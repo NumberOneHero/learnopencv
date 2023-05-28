@@ -87,9 +87,9 @@ disparity = None
 depth_map = None
 
 # These parameters can vary according to the setup
-max_depth = 17 # maximum distance the setup can measure (in cm)
-min_depth = 11 # minimum distance the setup can measure (in cm)
-depth_thresh = 12 # Threshold for SAFE distance (in cm)
+max_depth = 20 # maximum distance the setup can measure (in cm)
+min_depth = 10# minimum distance the setup can measure (in cm)
+depth_thresh = 13 # Threshold for SAFE distance (in cm)
 
 # Reading the stored the StereoBM parameters
 cv_file = cv2.FileStorage("../data/depth_estmation_params_py.xml", cv2.FILE_STORAGE_READ)
@@ -134,21 +134,21 @@ def obstacle_avoid():
 		# Contour detection 
 
 
-		contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
+		contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
 		cnts = sorted(contours, key=cv2.contourArea, reverse=True)
-		
+
 		# Check if detected contour is significantly large (to avoid multiple tiny regions)
 		if cv2.contourArea(cnts[0]) > 0.01*mask.shape[0]*mask.shape[1]:
 
 			x,y,w,h = cv2.boundingRect(cnts[0])
 
-			# finding average depth of region represented by the largest contour 
+			# finding average depth of region represented by the largest contour
 			mask2 = np.zeros_like(mask)
-			cv2.drawContours(mask2, cnts, 0, (255), -1)
-
+			cv2.drawContours(mask2, cnts[0], 0, 255, -1)
+			cv2.drawContours(output_canvas, cnts[0], -1, (0,150,0), 3)
 			# Calculating the average depth of the object closer than the safe distance
 			depth_mean, _ = cv2.meanStdDev(depth_map, mask=mask2)
-			
+
 			# Display warning text
 			cv2.putText(output_canvas, "WARNING !", (x+5,y-40), 1, 2, (0,0,255), 2, 2)
 			cv2.putText(output_canvas, "Object at", (x+5,y), 1, 2, (100,10,25), 2, 2)
@@ -184,7 +184,7 @@ while True:
 							cv2.BORDER_CONSTANT,
 							0)
 		Left_nice = cv2.bilateralFilter(Left_nice, 5, 15, 15)		# Applying stereo image rectification on the right image
-		output_canvas = Left_nice.copy()
+		output_canvas =  cv2.cvtColor(Left_nice, cv2.COLOR_GRAY2BGR)
 		Right_nice= cv2.remap(imgR_gray,
 							Right_Stereo_Map_x,
 							Right_Stereo_Map_y,
@@ -226,7 +226,7 @@ while True:
 		depth_map = cv2.bitwise_and(depth_map,depth_map,mask=mask_temp)
 
 		obstacle_avoid()
-		
+
 		# cv2.resizeWindow("disp",700,700)
 		cv2.imshow("disp",disparity)
 
