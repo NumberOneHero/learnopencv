@@ -56,7 +56,7 @@ def Esp32Frame(url,bts,ret):
             # img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 
 
-            k = cv2.waitKey(1)
+
             ret = True
         else:
             ret = False
@@ -157,10 +157,13 @@ def obstacle_avoid():
 
 while True:
 	# Capturing and storing left and right camera images
-	btsL, imgL, retL = Esp32Frame(urlLeft, btsL, retL)
-	btsR, imgR, retR = Esp32Frame(urlRight, btsR, retR)
 
-	
+
+	btsR, imgR, retR = Esp32Frame(urlRight, btsR, retR)
+	btsL, imgL, retL = Esp32Frame(urlLeft, btsL, retL)
+
+	cv2.imshow("leftREAL", imgL)
+	cv2.imshow("rightREAL", imgR)
 	if retL and retR:
 
 
@@ -174,7 +177,7 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		Left_nice = cv2.bilateralFilter(Left_nice, 5, 30, 30)		# Applying stereo image rectification on the right image
+		# Left_nice = cv2.bilateralFilter(Left_nice, 5, 30, 30)		# Applying stereo image rectification on the right image
 		output_canvas =  cv2.cvtColor(Left_nice, cv2.COLOR_GRAY2BGR)
 		Right_nice= cv2.remap(imgR_gray,
 							Right_Stereo_Map_x,
@@ -183,7 +186,7 @@ while True:
 							cv2.BORDER_CONSTANT,
 							0)
 
-		Right_nice = cv2.bilateralFilter(Right_nice, 5, 30, 30)
+		# Right_nice = cv2.bilateralFilter(Right_nice, 5, 30, 30)
 
 
 		# Setting the updated parameters before computing disparity map

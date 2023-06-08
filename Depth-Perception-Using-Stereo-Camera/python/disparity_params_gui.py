@@ -2,7 +2,7 @@ import cv2
 
 
 
-btsR= b''
+btsR = b''
 btsL = b''
 # change to your ESP32-CAM ip
 import numpy as np
@@ -14,8 +14,9 @@ pTime = 0
 urlLeft = "http://192.168.50.87:81/"
 urlRight = "http://192.168.50.16:81/"
 CAMERA_BUFFRER_SIZE = 1024
-streamLeft = urlopen(urlLeft)
+
 streamRight = urlopen(urlRight)
+streamLeft = urlopen(urlLeft)
 num=0
 retL = False
 retR = False
@@ -107,10 +108,10 @@ stereo = cv2.StereoBM_create()
 while True:
 
 	# Capturing and storing left and right camera images
-
-
-	btsR,imgR,retR = Esp32Frame(streamRight,btsR,retR)
+	btsR, imgR, retR = Esp32Frame(streamRight, btsR, retR)
 	btsL, imgL, retL = Esp32Frame(streamLeft, btsL, retL)
+
+
 
 	# Proceed only if the frames have been captured
 	if retL and retR:

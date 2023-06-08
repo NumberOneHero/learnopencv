@@ -166,9 +166,9 @@ while True:
 	btsL,imgL,retL = Esp32Frame(streamLeft,btsL,retL)
 
 	btsR,imgR,retR = Esp32Frame(streamRight,btsR,retR)
+	cv2.imshow("leftREAL", imgL)
+	cv2.imshow("rightREAL", imgR)
 
-
-	
 	if retL and retR:
 		
 
