@@ -25,33 +25,35 @@ CAMERA_BUFFRER_SIZE = 1024
 num=0
 retL = False
 retR = False
-ret = None
+streamLeft = None
+streamRight =None
+
 
 imgR = None
 imgL = None
-def Esp32Frame(url,bts,ret):
+
+
+def Esp32Frame(stream,bts,ret):
     jpghead =-1
     jpgend = -1
 
-    stream = urllib.request.urlopen(url)
+
     while (jpghead < 0 or jpgend < 0):
         bts += stream.read()
 
         if jpghead < 0 :
             jpghead = bts.find(b'\xff\xd8')
-            print("jpghead < 0")
-            print(jpghead)
+
         if jpgend < 0:
-            print("jpgend < 0")
+
 
             jpgend = bts.find(b'\xff\xd9')
-            print(jpgend)
+
 
         if jpghead > -1 and jpgend > -1:
             jpg = bts[jpghead:jpgend + 2]
             bts = bts[jpgend + 2:]
-            print("got hereeeeeeeeee")
-            print(jpgend)
+
             img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
             # img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 
@@ -127,7 +129,7 @@ def obstacle_avoid():
 		# Contour detection 
 
 
-		contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_NONE)
+		contours, _ = cv2.findContours(mask, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 		cnts = sorted(contours, key=cv2.contourArea, reverse=True)
 
 		# Check if detected contour is significantly large (to avoid multiple tiny regions)
@@ -157,10 +159,14 @@ def obstacle_avoid():
 
 while True:
 	# Capturing and storing left and right camera images
+	streamLeft = urllib.request.urlopen(urlLeft)
+	streamRight = urllib.request.urlopen(urlRight)
+
+	btsL, imgL, retL = Esp32Frame(streamLeft, btsL, retL)
+	btsR, imgR, retR = Esp32Frame(streamRight, btsR, retR)
 
 
-	btsR, imgR, retR = Esp32Frame(urlRight, btsR, retR)
-	btsL, imgL, retL = Esp32Frame(urlLeft, btsL, retL)
+
 
 	cv2.imshow("leftREAL", imgL)
 	cv2.imshow("rightREAL", imgR)
@@ -229,6 +235,7 @@ while True:
 	
 	else:
 		# Capturing and storing left and right camera images
-		btsL, imgL, retL = Esp32Frame(urlLeft, btsL, retL)
-		btsR, imgR, retR = Esp32Frame(urlRight, btsR, retR)
+		print("FAILED")
+		retL = False
+		retR = False
 
