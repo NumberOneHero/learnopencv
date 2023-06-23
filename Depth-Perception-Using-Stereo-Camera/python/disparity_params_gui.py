@@ -1,40 +1,39 @@
 import cv2
 
-
-
-btsR = b''
-btsL = b''
-# change to your ESP32-CAM ip
 import numpy as np
+import urllib.request
+import time
+
 from urllib.request import urlopen
 
-pTime = 0
+btsR= b''
+btsL = b''
 
-
-urlLeft = "http://192.168.50.87:81/"
-urlRight = "http://192.168.50.16:81/"
+urlLeft = "http://192.168.50.87/capture"
+urlRight = "http://192.168.50.16/capture"
 CAMERA_BUFFRER_SIZE = 1024
 
-streamRight = urlopen(urlRight)
-streamLeft = urlopen(urlLeft)
 num=0
 retL = False
 retR = False
-ret = None
+streamLeft = None
+streamRight =None
+
 
 imgR = None
 imgL = None
+
+
 def Esp32Frame(stream,bts,ret):
-    jpghead = -1
+    jpghead =-1
     jpgend = -1
 
-    while (jpghead < 0 or jpgend < 0):
 
-        bts += stream.read(CAMERA_BUFFRER_SIZE)
+    while (jpghead < 0 or jpgend < 0):
+        bts += stream.read()
 
         if jpghead < 0 :
             jpghead = bts.find(b'\xff\xd8')
-
 
         if jpgend < 0:
 
@@ -42,29 +41,20 @@ def Esp32Frame(stream,bts,ret):
             jpgend = bts.find(b'\xff\xd9')
 
 
-        if jpghead > -1 and jpgend > -1 and jpgend>jpghead:
+        if jpghead > -1 and jpgend > -1:
             jpg = bts[jpghead:jpgend + 2]
             bts = bts[jpgend + 2:]
-
 
             img = cv2.imdecode(np.frombuffer(jpg, dtype=np.uint8), cv2.IMREAD_UNCHANGED)
             # img = cv2.rotate(img, cv2.ROTATE_90_CLOCKWISE)
 
 
-            k = cv2.waitKey(1)
+
             ret = True
+        else:
+            ret = False
 
-
-
-        elif jpghead > -1 and jpgend > -1 and jpgend<jpghead :
-            jpgend = -1
-            jpghead = -1
-            ret= False
-
-
-
-    return bts , img,ret
-
+    return bts,img,ret
 
 
 
@@ -108,11 +98,17 @@ stereo = cv2.StereoBM_create()
 while True:
 
 	# Capturing and storing left and right camera images
-	btsR, imgR, retR = Esp32Frame(streamRight, btsR, retR)
+
+	streamRight = urllib.request.urlopen(urlRight)
+	streamLeft = urllib.request.urlopen(urlLeft)
 	btsL, imgL, retL = Esp32Frame(streamLeft, btsL, retL)
+	btsR, imgR, retR = Esp32Frame(streamRight, btsR, retR)
 
 
 
+
+	cv2.imshow("leftREAL", imgL)
+	cv2.imshow("rightREAL", imgR)
 	# Proceed only if the frames have been captured
 	if retL and retR:
 		imgR_gray = cv2.cvtColor(imgR,cv2.COLOR_BGR2GRAY)
@@ -125,15 +121,20 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		# Left_nice = cv2.bilateralFilter(Left_nice,5, 15, 15)
-		# Applying stereo image rectification on the right image
+		Left_nice = cv2.bilateralFilter(Left_nice, 5, 30, 30)		# Applying stereo image rectification on the right image
+		output_canvas =  cv2.cvtColor(Left_nice, cv2.COLOR_GRAY2BGR)
+
+		Left_nice  = cv2.Canny(image=Left_nice, threshold1=1, threshold2=40)
 		Right_nice= cv2.remap(imgR_gray,
 							Right_Stereo_Map_x,
 							Right_Stereo_Map_y,
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		# Right_nice = cv2.bilateralFilter(Right_nice, 5, 15, 15)
+
+		Right_nice = cv2.bilateralFilter(Right_nice, 5, 30, 30)
+		Right_nice = cv2.Canny(image=Right_nice, threshold1=1, threshold2=40)
+		cv2.imshow("RIGHTNICE",Right_nice)
 		# Updating the parameters based on the trackbar positions
 		numDisparities = cv2.getTrackbarPos('numDisparities','disp')*16
 		blockSize = cv2.getTrackbarPos('blockSize','disp')*2 + 5

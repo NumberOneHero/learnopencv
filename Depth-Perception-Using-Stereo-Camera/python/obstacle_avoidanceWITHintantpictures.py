@@ -146,8 +146,8 @@ def obstacle_avoid():
 
 			# Display warning text
 			cv2.putText(output_canvas, "WARNING !", (x+5,y-40), 1, 2, (0,0,255), 2, 2)
-			cv2.putText(output_canvas, "Object at", (x+5,y), 1, 2, (100,10,25), 2, 2)
-			cv2.putText(output_canvas, "%.2f cm"%depth_mean, (x+5,y+40), 1, 2, (100,10,25), 2, 2)
+			cv2.putText(output_canvas, "Object at", (x+5,y), 1, 2, (255,255,255), 2, 2)
+			cv2.putText(output_canvas, "%.2f cm"%depth_mean, (x+5,y+40), 1, 2, (255,255,255), 2, 2)
 			cv2.rectangle(output_canvas, (x, y), (x + w, y + h), (255, 0, 0), 4)
 
 	else:
@@ -183,8 +183,10 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		# Left_nice = cv2.bilateralFilter(Left_nice, 5, 30, 30)		# Applying stereo image rectification on the right image
+		Left_nice = cv2.bilateralFilter(Left_nice, 5, 30, 30)		# Applying stereo image rectification on the right image
 		output_canvas =  cv2.cvtColor(Left_nice, cv2.COLOR_GRAY2BGR)
+
+		Left_nice  = cv2.Canny(image=Left_nice, threshold1=100, threshold2=200)
 		Right_nice= cv2.remap(imgR_gray,
 							Right_Stereo_Map_x,
 							Right_Stereo_Map_y,
@@ -192,9 +194,9 @@ while True:
 							cv2.BORDER_CONSTANT,
 							0)
 
-		# Right_nice = cv2.bilateralFilter(Right_nice, 5, 30, 30)
-
-
+		Right_nice = cv2.bilateralFilter(Right_nice, 5, 30, 30)
+		Right_nice = cv2.Canny(image=Right_nice, threshold1=1, threshold2=20)
+		cv2.imshow("RIGHTNICE",Right_nice)
 		# Setting the updated parameters before computing disparity map
 		stereo.setNumDisparities(numDisparities)
 		stereo.setBlockSize(blockSize)
