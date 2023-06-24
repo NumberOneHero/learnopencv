@@ -190,89 +190,108 @@ def obstacle_avoid():
 
 	cv2.imshow('output_canvas',output_canvas)
 	cv2.imshow("mask",mask)
-	
 
-while True:
-	# Capturing and storing left and right camera images
-	streamLeft = urllib.request.urlopen(urlLeft)
-	streamRight = urllib.request.urlopen(urlRight)
-
-	btsL, imgL, retL = Esp32Frame(streamLeft, btsL, retL)
-	btsR, imgR, retR = Esp32Frame(streamRight, btsR, retR)
+with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
 
+	s.connect((HOST, PORT))
+	Heartbeat = "{Heartbeat}"
+
+	go = 0
+	data = s.recv(1024)
+	print(data)
+	stop = False
+	pTime = 0
+
+	if (current_milli_time() - Heartbeat_time > 2500):
+		s.send(bytes(json.dumps(Heartbeat), encoding="utf-8"))
+		print("HEARTBEAT SENT")
+		Heartbeat_time = current_milli_time()
 
 
-	cv2.imshow("leftREAL", imgL)
-	cv2.imshow("rightREAL", imgR)
-	if retL and retR:
 
 
-		imgR_gray = cv2.cvtColor(imgR,cv2.COLOR_BGR2GRAY)
-		imgL_gray = cv2.cvtColor(imgL,cv2.COLOR_BGR2GRAY)
-
-		# Applying stereo image rectification on the left image
-		Left_nice= cv2.remap(imgL_gray,
-							Left_Stereo_Map_x,
-							Left_Stereo_Map_y,
-							cv2.INTER_LANCZOS4,
-							cv2.BORDER_CONSTANT,
-							0)
-		Left_nice = cv2.bilateralFilter(Left_nice, 5, 30, 30)		# Applying stereo image rectification on the right image
-		output_canvas =  cv2.cvtColor(Left_nice, cv2.COLOR_GRAY2BGR)
-
-		# Left_nice  = cv2.Canny(image=Left_nice, threshold1=100, threshold2=200)
-		Right_nice= cv2.remap(imgR_gray,
-							Right_Stereo_Map_x,
-							Right_Stereo_Map_y,
-							cv2.INTER_LANCZOS4,
-							cv2.BORDER_CONSTANT,
-							0)
-
-		Right_nice = cv2.bilateralFilter(Right_nice, 5, 30, 30)
-		# Right_nice = cv2.Canny(image=Right_nice, threshold1=1, threshold2=20)
-		cv2.imshow("RIGHTNICE",Right_nice)
-		# Setting the updated parameters before computing disparity map
-		stereo.setNumDisparities(numDisparities)
-		stereo.setBlockSize(blockSize)
-		stereo.setPreFilterType(preFilterType)
-		stereo.setPreFilterSize(preFilterSize)
-		stereo.setPreFilterCap(preFilterCap)
-		stereo.setTextureThreshold(textureThreshold)
-		stereo.setUniquenessRatio(uniquenessRatio)
-		stereo.setSpeckleRange(speckleRange)
-		stereo.setSpeckleWindowSize(speckleWindowSize)
-		stereo.setDisp12MaxDiff(disp12MaxDiff)
-		stereo.setMinDisparity(minDisparity)
-
-		# Calculating disparity using the StereoBM algorithm
-		disparity = stereo.compute(Left_nice,Right_nice)
-		# NOTE: compute returns a 16bit signed single channel image,
-		# CV_16S containing a disparity map scaled by 16. Hence it 
-		# is essential to convert it to CV_16S and scale it down 16 times.
-
-		# Converting to float32 
-		disparity = disparity.astype(np.float32)
-
-		# Normalizing the disparity map
-		disparity = (disparity/16.0 - minDisparity)/numDisparities
-		
-		depth_map = M/(disparity) # for depth in (cm)
-
-		mask_temp = cv2.inRange(depth_map,min_depth,max_depth)
-		depth_map = cv2.bitwise_and(depth_map,depth_map,mask=mask_temp)
-
-		obstacle_avoid()
-
-		# cv2.resizeWindow("disp",700,700)
-		cv2.imshow("disp",disparity)
-
-		if cv2.waitKey(1) == 27:
-			break
-	
-	else:
+	while True:
 		# Capturing and storing left and right camera images
-		print("FAILED")
-		retL = False
-		retR = False
+		# streamLeft = urllib.request.urlopen(urlLeft)
+		# streamRight = urllib.request.urlopen(urlRight)
+
+		# btsL, imgL, retL = Esp32Frame(streamLeft, btsL, retL)
+		# btsR, imgR, retR = Esp32Frame(streamRight, btsR, retR)
+
+
+
+
+		# cv2.imshow("leftREAL", imgL)
+		# cv2.imshow("rightREAL", imgR)
+		if retL and retR:
+
+
+			imgR_gray = cv2.cvtColor(imgR,cv2.COLOR_BGR2GRAY)
+			imgL_gray = cv2.cvtColor(imgL,cv2.COLOR_BGR2GRAY)
+
+			# Applying stereo image rectification on the left image
+			Left_nice= cv2.remap(imgL_gray,
+								Left_Stereo_Map_x,
+								Left_Stereo_Map_y,
+								cv2.INTER_LANCZOS4,
+								cv2.BORDER_CONSTANT,
+								0)
+			Left_nice = cv2.bilateralFilter(Left_nice, 5, 30, 30)		# Applying stereo image rectification on the right image
+			output_canvas =  cv2.cvtColor(Left_nice, cv2.COLOR_GRAY2BGR)
+
+			# Left_nice  = cv2.Canny(image=Left_nice, threshold1=100, threshold2=200)
+			Right_nice= cv2.remap(imgR_gray,
+								Right_Stereo_Map_x,
+								Right_Stereo_Map_y,
+								cv2.INTER_LANCZOS4,
+								cv2.BORDER_CONSTANT,
+								0)
+
+			Right_nice = cv2.bilateralFilter(Right_nice, 5, 30, 30)
+			# Right_nice = cv2.Canny(image=Right_nice, threshold1=1, threshold2=20)
+			cv2.imshow("RIGHTNICE",Right_nice)
+			# Setting the updated parameters before computing disparity map
+			stereo.setNumDisparities(numDisparities)
+			stereo.setBlockSize(blockSize)
+			stereo.setPreFilterType(preFilterType)
+			stereo.setPreFilterSize(preFilterSize)
+			stereo.setPreFilterCap(preFilterCap)
+			stereo.setTextureThreshold(textureThreshold)
+			stereo.setUniquenessRatio(uniquenessRatio)
+			stereo.setSpeckleRange(speckleRange)
+			stereo.setSpeckleWindowSize(speckleWindowSize)
+			stereo.setDisp12MaxDiff(disp12MaxDiff)
+			stereo.setMinDisparity(minDisparity)
+
+			# Calculating disparity using the StereoBM algorithm
+			disparity = stereo.compute(Left_nice,Right_nice)
+			# NOTE: compute returns a 16bit signed single channel image,
+			# CV_16S containing a disparity map scaled by 16. Hence it
+			# is essential to convert it to CV_16S and scale it down 16 times.
+
+			# Converting to float32
+			disparity = disparity.astype(np.float32)
+
+			# Normalizing the disparity map
+			disparity = (disparity/16.0 - minDisparity)/numDisparities
+
+			depth_map = M/(disparity) # for depth in (cm)
+
+			mask_temp = cv2.inRange(depth_map,min_depth,max_depth)
+			depth_map = cv2.bitwise_and(depth_map,depth_map,mask=mask_temp)
+
+			obstacle_avoid()
+
+			# cv2.resizeWindow("disp",700,700)
+			cv2.imshow("disp",disparity)
+
+			if cv2.waitKey(1) == 27:
+				break
+
+		else:
+			# Capturing and storing left and right camera images
+			print("FAILED")
+			retL = False
+			retR = False
 
