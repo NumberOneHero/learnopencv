@@ -18,7 +18,7 @@ from urllib.request import urlopen
 HOST = "192.168.4.1"
 PORT= 100
 
-move = {"N":4,"D1":230,"D2":230}
+move = {"N":4,"D1":55,"D2":55}
 text2 = {"N":1,"D1":0,"D2":0,"D3":2}
 left = {"N":4,"D1":210,"D2":20}
 right = {"N":4,"D1":20,"D2":210}
@@ -29,7 +29,7 @@ Testing=50
 ggg = 0
 Heartbeat_time = 0
 Motor_Time = 0
-
+go = 10
 
 def current_milli_time():
     return round(time.time() * 1000)
@@ -153,7 +153,7 @@ output_canvas = None
 # Creating an object of StereoBM algorithm
 stereo = cv2.StereoBM_create()
 
-def obstacle_avoid():
+def obstacle_avoid(gg,goo):
 
 	# Mask to segment regions with depth less than threshold
 	mask = cv2.inRange(depth_map,10,depth_thresh)
@@ -185,11 +185,42 @@ def obstacle_avoid():
 			cv2.putText(output_canvas, "%.2f cm"%depth_mean, (x+5,y+40), 1, 2, (255,255,255), 2, 2)
 			cv2.rectangle(output_canvas, (x, y), (x + w, y + h), (255, 0, 0), 4)
 
+			if (goo < 10):
+				goo += 1
+
+			if (current_milli_time() - ggg > Testing):
+				stop = False
+				s.send(bytes(json.dumps(text2), encoding="utf-8"))
+				print("sent 00000000000000000")
+
+				gg = current_milli_time()
+
+
+
+
+
+
 	else:
 		cv2.putText(output_canvas, "SAFE!", (100,100),1,3,(0,255,0),2,3)
 
+		if (goo > 0 ):
+			goo -= 1
+
+		if (current_milli_time() - gg > Testing):
+			s.send(bytes(json.dumps(text2), encoding="utf-8"))
+			print("sent 00000000000000000")
+
+			gg = current_milli_time()
 	cv2.imshow('output_canvas',output_canvas)
 	cv2.imshow("mask",mask)
+
+	return gg ,goo
+
+
+
+
+
+
 
 with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
@@ -212,6 +243,10 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
 
 	while True:
+
+
+
+
 		# Capturing and storing left and right camera images
 		# streamLeft = urllib.request.urlopen(urlLeft)
 		# streamRight = urllib.request.urlopen(urlRight)
@@ -219,8 +254,12 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 		# btsL, imgL, retL = Esp32Frame(streamLeft, btsL, retL)
 		# btsR, imgR, retR = Esp32Frame(streamRight, btsR, retR)
 
-
-
+		if (current_milli_time() - Heartbeat_time > 2500):
+			s.send(bytes(json.dumps(Heartbeat), encoding="utf-8"))
+			print("HEARTBEAT SENT")
+			Heartbeat_time = current_milli_time()
+		data = s.recv(1024)
+		print(data)
 
 		# cv2.imshow("leftREAL", imgL)
 		# cv2.imshow("rightREAL", imgR)
@@ -281,7 +320,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 			mask_temp = cv2.inRange(depth_map,min_depth,max_depth)
 			depth_map = cv2.bitwise_and(depth_map,depth_map,mask=mask_temp)
 
-			obstacle_avoid()
+			ggg , go = obstacle_avoid(ggg,go)
 
 			# cv2.resizeWindow("disp",700,700)
 			cv2.imshow("disp",disparity)
