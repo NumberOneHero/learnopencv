@@ -107,8 +107,8 @@ while True:
 
 
 
-	cv2.imshow("leftREAL", imgL)
-	cv2.imshow("rightREAL", imgR)
+	# cv2.imshow("leftREAL", imgL)
+	# cv2.imshow("rightREAL", imgR)
 	# Proceed only if the frames have been captured
 	if retL and retR:
 		imgR_gray = cv2.cvtColor(imgR,cv2.COLOR_BGR2GRAY)
@@ -121,10 +121,10 @@ while True:
 							cv2.INTER_LANCZOS4,
 							cv2.BORDER_CONSTANT,
 							0)
-		Left_nice = cv2.bilateralFilter(Left_nice, 5, 30, 30)		# Applying stereo image rectification on the right image
+		# Left_nice = cv2.bilateralFilter(Left_nice, 5, 30, 30)		# Applying stereo image rectification on the right image
 		output_canvas =  cv2.cvtColor(Left_nice, cv2.COLOR_GRAY2BGR)
 
-		Left_nice  = cv2.Canny(image=Left_nice, threshold1=1, threshold2=40)
+		# Left_nice  = cv2.Canny(image=Left_nice, threshold1=55, threshold2=55)
 		Right_nice= cv2.remap(imgR_gray,
 							Right_Stereo_Map_x,
 							Right_Stereo_Map_y,
@@ -132,9 +132,10 @@ while True:
 							cv2.BORDER_CONSTANT,
 							0)
 
-		Right_nice = cv2.bilateralFilter(Right_nice, 5, 30, 30)
-		Right_nice = cv2.Canny(image=Right_nice, threshold1=1, threshold2=40)
+		# Right_nice = cv2.bilateralFilter(Right_nice, 5, 30, 30)
+		# Right_nice = cv2.Canny(image=Right_nice, threshold1=111, threshold2=111)
 		cv2.imshow("RIGHTNICE",Right_nice)
+		cv2.imshow("LEFTTNICE",Left_nice)
 		# Updating the parameters based on the trackbar positions
 		numDisparities = cv2.getTrackbarPos('numDisparities','disp')*16
 		blockSize = cv2.getTrackbarPos('blockSize','disp')*2 + 5
@@ -175,8 +176,8 @@ while True:
 
 		# Displaying the disparity map
 		cv2.imshow("disparity",disparity)
-		cv2.imshow("left", Left_nice)
-		cv2.imshow("right", Right_nice)
+		# cv2.imshow("left", Left_nice)
+		# cv2.imshow("right", Right_nice)
 		# Close window using esc key
 		if cv2.waitKey(1) == 27:
 			break

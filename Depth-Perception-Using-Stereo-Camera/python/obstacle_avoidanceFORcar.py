@@ -1,19 +1,54 @@
 
 import cv2
-
+import socket
+import json
 import numpy as np
 import urllib.request
 import time
 
 from urllib.request import urlopen
 
+
+
+
+
+
+
+
+HOST = "192.168.4.1"
+PORT= 100
+
+move = {"N":4,"D1":230,"D2":230}
+text2 = {"N":1,"D1":0,"D2":0,"D3":2}
+left = {"N":4,"D1":210,"D2":20}
+right = {"N":4,"D1":20,"D2":210}
+
+
+
+Testing=50
+ggg = 0
+Heartbeat_time = 0
+Motor_Time = 0
+
+
+def current_milli_time():
+    return round(time.time() * 1000)
+
+def empty(a):
+    pass
+
+
+
+
+
+
+
+
+
+
+
+
 pTime = 0
-
-
-
-kernel = np.array([[-1,-1,-1], [-1,9,-1], [-1,-1,-1]])
-
-
 
 btsR= b''
 btsL = b''
