@@ -15,7 +15,7 @@ from urllib.request import urlopen
 
 
 
-HOST = "192.168.4.1"
+HOST = "192.168.50.113"
 PORT= 100
 
 move = {"N":4,"D1":55,"D2":55}
@@ -226,6 +226,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
 
 	s.connect((HOST, PORT))
+
 	Heartbeat = "{Heartbeat}"
 
 	go = 0
@@ -234,10 +235,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 	stop = False
 	pTime = 0
 
-	if (current_milli_time() - Heartbeat_time > 2500):
-		s.send(bytes(json.dumps(Heartbeat), encoding="utf-8"))
-		print("HEARTBEAT SENT")
-		Heartbeat_time = current_milli_time()
+
 
 
 
@@ -258,8 +256,9 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 			s.send(bytes(json.dumps(Heartbeat), encoding="utf-8"))
 			print("HEARTBEAT SENT")
 			Heartbeat_time = current_milli_time()
-		data = s.recv(1024)
-		print(data)
+
+		time.sleep(0.2)
+
 
 		# cv2.imshow("leftREAL", imgL)
 		# cv2.imshow("rightREAL", imgR)
