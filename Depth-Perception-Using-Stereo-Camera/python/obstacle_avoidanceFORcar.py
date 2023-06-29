@@ -25,7 +25,7 @@ right = {"N":4,"D1":20,"D2":210}
 
 
 
-Testing=50
+Testing=300
 ggg = 0
 Heartbeat_time = 0
 Motor_Time = 0
@@ -186,12 +186,12 @@ def obstacle_avoid(gg,goo):
 			cv2.rectangle(output_canvas, (x, y), (x + w, y + h), (255, 0, 0), 4)
 
 			if (goo < 10):
-				goo += 1
+				goo = 10
 
-			if (current_milli_time() - ggg > Testing):
+			if (current_milli_time() - gg > Testing and goo >= 3 ):
 				stop = False
 				s.send(bytes(json.dumps(text2), encoding="utf-8"))
-				print("sent 00000000000000000")
+				print("STOP")
 
 				gg = current_milli_time()
 
@@ -206,9 +206,9 @@ def obstacle_avoid(gg,goo):
 		if (goo > 0 ):
 			goo -= 1
 
-		if (current_milli_time() - gg > Testing):
-			s.send(bytes(json.dumps(text2), encoding="utf-8"))
-			print("sent 00000000000000000")
+		if (current_milli_time() - gg > Testing and goo < 3):
+			s.send(bytes(json.dumps(move), encoding="utf-8"))
+			print("MOVE B****")
 
 			gg = current_milli_time()
 	cv2.imshow('output_canvas',output_canvas)
@@ -228,10 +228,11 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 	s.connect((HOST, PORT))
 
 	Heartbeat = "{Heartbeat}"
-
+	print("connect")
 	go = 0
-	data = s.recv(1024)
+	data = s.recv(1)
 	print(data)
+	print("after connect")
 	stop = False
 	pTime = 0
 
@@ -242,22 +243,22 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 
 	while True:
 
-
+		# print(current_milli_time() - ggg, "current time")
 
 
 		# Capturing and storing left and right camera images
-		# streamLeft = urllib.request.urlopen(urlLeft)
-		# streamRight = urllib.request.urlopen(urlRight)
+		streamLeft = urllib.request.urlopen(urlLeft)
+		streamRight = urllib.request.urlopen(urlRight)
 
-		# btsL, imgL, retL = Esp32Frame(streamLeft, btsL, retL)
-		# btsR, imgR, retR = Esp32Frame(streamRight, btsR, retR)
-
-		if (current_milli_time() - Heartbeat_time > 2500):
+		btsL, imgL, retL = Esp32Frame(streamLeft, btsL, retL)
+		btsR, imgR, retR = Esp32Frame(streamRight, btsR, retR)
+		if (current_milli_time() - Heartbeat_time > 2000):
+			print("HEARTBEAT before sent")
 			s.send(bytes(json.dumps(Heartbeat), encoding="utf-8"))
 			print("HEARTBEAT SENT")
 			Heartbeat_time = current_milli_time()
 
-		time.sleep(0.2)
+
 
 
 		# cv2.imshow("leftREAL", imgL)
