@@ -92,7 +92,7 @@ cv_file.release()
 # Keeping the target object at max_dist we store disparity values
 # after every sample_delta distance.
 max_dist = 20 # max distance to keep the target object (in cm)
-min_dist = 10# Minimum distance the stereo setup can measure (in cm)
+min_dist = 14# Minimum distance the stereo setup can measure (in cm)
 sample_delta = 1# Distance between two sampling points (in cm)
 
 Z = max_dist 

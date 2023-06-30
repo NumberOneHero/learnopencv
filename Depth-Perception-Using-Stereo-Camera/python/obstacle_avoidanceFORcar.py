@@ -18,17 +18,17 @@ from urllib.request import urlopen
 HOST = "192.168.50.113"
 PORT= 100
 
-move = {"N":4,"D1":55,"D2":55}
+move = {"N":4,"D1":35,"D2":35}
 text2 = {"N":1,"D1":0,"D2":0,"D3":2}
-left = {"N":4,"D1":210,"D2":20}
-right = {"N":4,"D1":20,"D2":210}
+left = {"N":4,"D1":90,"D2":0}
+right = {"N":4,"D1":0,"D2":90}
 
 
 
 Testing=300
 ggg = 0
 Heartbeat_time = 0
-Motor_Time = 0
+LastCommand = 0
 go = 10
 
 def current_milli_time():
@@ -118,8 +118,8 @@ depth_map = None
 
 # These parameters can vary according to the setup
 max_depth = 20 # maximum distance the setup can measure (in cm)
-min_depth = 10# minimum distance the setup can measure (in cm)
-depth_thresh = 14 # Threshold for SAFE distance (in cm)
+min_depth = 14# minimum distance the setup can measure (in cm)
+depth_thresh = 16 # Threshold for SAFE distance (in cm)
 
 # Reading the stored the StereoBM parameters
 cv_file = cv2.FileStorage("../data/depth_estmation_params_py.xml", cv2.FILE_STORAGE_READ)
@@ -153,7 +153,7 @@ output_canvas = None
 # Creating an object of StereoBM algorithm
 stereo = cv2.StereoBM_create()
 
-def obstacle_avoid(gg,goo):
+def obstacle_avoid(gg,goo,LC):
 
 	# Mask to segment regions with depth less than threshold
 	mask = cv2.inRange(depth_map,10,depth_thresh)
@@ -171,6 +171,8 @@ def obstacle_avoid(gg,goo):
 		if cv2.contourArea(cnts[0]) > 0.01*mask.shape[0]*mask.shape[1]:
 
 			x,y,w,h = cv2.boundingRect(cnts[0])
+			xCenter = round(x + (w / 2))
+			yCenter = round(y+ (h/ 2))
 
 			# finding average depth of region represented by the largest contour
 			mask2 = np.zeros_like(mask)
@@ -184,16 +186,25 @@ def obstacle_avoid(gg,goo):
 			cv2.putText(output_canvas, "Object at", (x+5,y), 1, 2, (255,255,255), 2, 2)
 			cv2.putText(output_canvas, "%.2f cm"%depth_mean, (x+5,y+40), 1, 2, (255,255,255), 2, 2)
 			cv2.rectangle(output_canvas, (x, y), (x + w, y + h), (255, 0, 0), 4)
+			cv2.circle(output_canvas, (xCenter, yCenter), radius=1, color=(0, 0, 255), thickness=1)
 
-			if (goo < 10):
-				goo = 10
+			if (goo < 4):
+				goo = 4
 
-			if (current_milli_time() - gg > Testing and goo >= 3 ):
-				stop = False
+			if (current_milli_time() - gg > Testing and goo >= 3 and goo < 7):
+				LC = 1
 				s.send(bytes(json.dumps(text2), encoding="utf-8"))
 				print("STOP")
+				goo += 1
 
 				gg = current_milli_time()
+			elif(current_milli_time() - gg > Testing and goo >= 7 ):
+				if(xCenter < 320):
+					s.send(bytes(json.dumps(right), encoding="utf-8"))
+					goo = 4
+				if(xCenter > 320):
+					s.send(bytes(json.dumps(left), encoding="utf-8"))
+					goo = 4
 
 
 
@@ -214,7 +225,7 @@ def obstacle_avoid(gg,goo):
 	cv2.imshow('output_canvas',output_canvas)
 	cv2.imshow("mask",mask)
 
-	return gg ,goo
+	return gg ,goo , LC
 
 
 
@@ -233,7 +244,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 	data = s.recv(1)
 	print(data)
 	print("after connect")
-	stop = False
+
 	pTime = 0
 
 
@@ -320,7 +331,7 @@ with socket.socket(socket.AF_INET, socket.SOCK_STREAM) as s:
 			mask_temp = cv2.inRange(depth_map,min_depth,max_depth)
 			depth_map = cv2.bitwise_and(depth_map,depth_map,mask=mask_temp)
 
-			ggg , go = obstacle_avoid(ggg,go)
+			ggg , go , LastCommand = obstacle_avoid(ggg,go,LastCommand)
 
 			# cv2.resizeWindow("disp",700,700)
 			cv2.imshow("disp",disparity)
